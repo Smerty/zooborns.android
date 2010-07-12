@@ -1,7 +1,11 @@
 package org.smerty.zooborns;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import android.R;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,14 +39,23 @@ public class ImageAdapter extends BaseAdapter {
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(that);
-            imageView.setLayoutParams(new GridView.LayoutParams(96, 96));
-            imageView.setScaleType(ImageView.ScaleType.CENTER);
+            imageView.setLayoutParams(new GridView.LayoutParams(that.columnWidth, that.columnWidth));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(1, 1, 1, 1);
         } else {
             imageView = (ImageView) convertView;
         }
         if (position < that.imgCache.images.size() && (that.imgCache.images.get(position).isComplete() || that.imgCache.images.get(position).isFailed())) {
-        	imageView.setImageDrawable(new BitmapDrawable(that.imgCache.images.get(position).getBitmapIcon()));
+        	Drawable image;
+        	
+        	try {
+				image = Drawable.createFromStream(new FileInputStream(Uri.parse(that.imgCache.images.get(position).filesystemUri()).getPath()), "src");
+				imageView.setImageDrawable(image);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				imageView.setImageDrawable(that.getResources().getDrawable(R.drawable.ic_menu_delete));
+			}
         }
         else {
         	imageView.setImageDrawable(that.getResources().getDrawable(R.drawable.ic_menu_help));

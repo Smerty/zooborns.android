@@ -6,11 +6,17 @@ import org.smerty.zooborns.data.ZooBornsGallery;
 import org.smerty.zooborns.data.ZooBornsPhoto;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.AsyncTask.Status;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -20,6 +26,11 @@ public class ZooBorns extends Activity {
 	public ImageCache imgCache;
 	public GridView gridview;
 	public ImageAdapter imgAdapter;
+	public ZooBornsGallery zGallery;
+	public int columnWidth = 128;
+	private AsyncTask<ZooBorns, Integer, Integer> updatetask;
+
+	public ProgressDialog progressDialog;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -32,6 +43,26 @@ public class ZooBorns extends Activity {
 
 		if (gridview == null) {
 			gridview = (GridView) findViewById(R.id.gridview);
+
+			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
+					.getDefaultDisplay();
+
+			int displayWidth = display.getWidth();
+
+			if (displayWidth / columnWidth < 2) {
+				columnWidth = 96;
+			}
+
+			if (displayWidth / columnWidth < 2) {
+				columnWidth = 64;
+			}
+
+			if (displayWidth / columnWidth < 2) {
+				columnWidth = 48;
+			}
+
+			Log.d("setColumnWidth", "width: " + columnWidth);
+			gridview.setColumnWidth(columnWidth);
 
 			gridview.setOnItemClickListener(new OnItemClickListener() {
 
@@ -79,23 +110,71 @@ public class ZooBorns extends Activity {
 			gridview.setAdapter(imgAdapter);
 		}
 
-		ZooBornsGallery zGallery = new ZooBornsGallery(this);
+		if (zGallery == null) {
+			zGallery = new ZooBornsGallery(this);
 
-		zGallery.update();
-
-		if (imgCache == null) {
-			imgCache = new ImageCache(this);
-		}
-
-		for (ZooBornsEntry entry : zGallery.entries) {
-			for (ZooBornsPhoto photo : entry.getPhotos()) {
-				imgCache.add(photo.getUrl());
+			if (this.updatetask == null) {
+				Log.d("startDownloading", "task was null, calling execute");
+				this.updatetask = new UpdateFeedTask().execute(this);
+			} else {
+				Status s = this.updatetask.getStatus();
+				if (s == Status.FINISHED) {
+					Log
+							.d("updatetask",
+									"task wasn't null, status finished, calling execute");
+					this.updatetask = new UpdateFeedTask().execute(this);
+				}
 			}
 		}
 
-		imgCache.startDownloading();
-
 		Log.d("onCreate", "done.");
 
+	}
+
+	private class UpdateFeedTask extends AsyncTask<ZooBorns, Integer, Integer> {
+
+		ZooBorns that;
+
+		protected Integer doInBackground(ZooBorns... thats) {
+
+			if (that == null) {
+				this.that = thats[0];
+			}
+
+			publishProgress(0);
+
+			that.zGallery.update();
+
+			if (that.imgCache == null) {
+				that.imgCache = new ImageCache(that);
+			}
+
+			for (ZooBornsEntry entry : that.zGallery.entries) {
+				for (ZooBornsPhoto photo : entry.getPhotos()) {
+					that.imgCache.add(photo.getUrl());
+				}
+			}
+
+			publishProgress(100);
+
+			return 0;
+		}
+
+		protected void onProgressUpdate(Integer... progress) {
+			Log.d("onProgressUpdate", progress[0].toString());
+			if (progress[0] == 0) {
+				that.progressDialog = ProgressDialog.show(that, "ZooBorns",
+						"Downloading ZooBorns XML Feed", true, false);
+			}
+			if (progress[0] == 100) {
+				that.progressDialog.dismiss();
+			}
+
+		}
+
+		protected void onPostExecute(Integer result) {
+			Log.d("onPostExecute", that.getApplicationInfo().packageName);
+			that.imgCache.startDownloading();
+		}
 	}
 }
