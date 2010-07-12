@@ -206,6 +206,9 @@ public class CachedImage {
 					return false;
 				}
 			}
+			else {
+				return true;
+			}
 		}
 		return false;
 	}
