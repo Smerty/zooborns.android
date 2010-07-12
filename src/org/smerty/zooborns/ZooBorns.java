@@ -1,67 +1,101 @@
 package org.smerty.zooborns;
 
+import org.smerty.cache.ImageCache;
 import org.smerty.zooborns.data.ZooBornsEntry;
 import org.smerty.zooborns.data.ZooBornsGallery;
+import org.smerty.zooborns.data.ZooBornsPhoto;
 
 import android.app.Activity;
-import android.graphics.Color;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class ZooBorns extends Activity {
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        
-        ZooBornsGallery zGallery = new ZooBornsGallery();
-        
-        zGallery.update();
-        
-        
-		ScrollView sv = new ScrollView(this);
 
-		TableLayout table = new TableLayout(this);
+	public ImageCache imgCache;
+	public GridView gridview;
+	public ImageAdapter imgAdapter;
 
-		// table.setStretchAllColumns(true);
-		table.setShrinkAllColumns(true);
-        
-        for (ZooBornsEntry entry : zGallery.entries) {
-        	table.addView(this.getTableRow(entry.getTitle(), this));
-        }
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-		sv.addView(table);
+		setContentView(R.layout.main);
 
-		setContentView(sv);        
+		final ZooBorns that = this;
 
-        
-    }
-    
-    private TableRow getTableRow(final String rowTitle, final Activity that) {
-    	TableRow row = new TableRow(that);
-    	
-    	LinearLayout ll = new LinearLayout(that);
-    	ll.setGravity(Gravity.CENTER_VERTICAL);
-    	ll.setOrientation(LinearLayout.HORIZONTAL);
+		if (gridview == null) {
+			gridview = (GridView) findViewById(R.id.gridview);
 
-    	
-		TextView text = new TextView(this);
-		text.setText(rowTitle);
-		text.setTextSize(24);
-		
-		row.setPadding(5, 5, 5, 5);
-		row.setBackgroundColor(Color.argb(200, 51, 51, 51));
-		
-		ll.addView(text);
-		
-		row.addView(ll);
-		
-    	return row;
-    }
+			gridview.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+					int position = arg2;
+
+					if (position >= that.imgCache.images.size()) {
+						Log.d("onClick", "Position: " + position
+								+ " is out of range ("
+								+ that.imgCache.images.size() + ")");
+						return;
+					} else {
+						Log.d("onClick", "Position: " + position
+								+ " is in range ("
+								+ that.imgCache.images.size() + ")");
+					}
+
+					if (that.imgCache.images.get(position).isFailed()) {
+						Log
+								.d("onClick",
+										"clicked on a failed download, starting downloader...");
+						that.imgCache.startDownloading();
+					} else if (that.imgCache.images.get(position).isComplete()) {
+						Log.d("onClick", "launching url: "
+								+ that.imgCache.images.get(position)
+										.filesystemUri());
+						Intent i = new Intent(that, FullscreenImage.class);
+						i.setData(Uri.parse(that.imgCache.images.get(position)
+								.filesystemUri()));
+						that.startActivity(i);
+					} else {
+						Log.d("onClick", "clicked on a... what did you click?");
+					}
+				}
+
+			});
+
+		}
+
+		if (imgAdapter == null) {
+			imgAdapter = new ImageAdapter(this);
+			gridview.setAdapter(imgAdapter);
+		}
+
+		ZooBornsGallery zGallery = new ZooBornsGallery(this);
+
+		zGallery.update();
+
+		if (imgCache == null) {
+			imgCache = new ImageCache(this);
+		}
+
+		for (ZooBornsEntry entry : zGallery.entries) {
+			for (ZooBornsPhoto photo : entry.getPhotos()) {
+				imgCache.add(photo.getUrl());
+			}
+		}
+
+		imgCache.startDownloading();
+
+		Log.d("onCreate", "done.");
+
+	}
 }

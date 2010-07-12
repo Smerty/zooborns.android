@@ -1,6 +1,5 @@
 package org.smerty.zooborns.feed;
 
-import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -15,6 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.smerty.zooborns.ZooBorns;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -26,7 +26,13 @@ import android.widget.Toast;
 public class FeedFetcher {
 
 	private Document rssDoc;
+	private ZooBorns that;
 	
+	public FeedFetcher(ZooBorns that) {
+		super();
+		this.that = that;
+	}
+
 	public Document getDoc() {
 		return rssDoc;
 	}
@@ -43,19 +49,17 @@ public class FeedFetcher {
 
 			String agent = "ZooBorns ";
 
-			/*
+			
 			try {
-				ComponentName compName = new ComponentName(this,FeedFetcher.class);
-				PackageInfo pkgInfo = this.getPackageManager().getPackageInfo(compName.getPackageName(), 0);
+				ComponentName compName = new ComponentName(that,ZooBorns.class);
+				PackageInfo pkgInfo = that.getPackageManager().getPackageInfo(compName.getPackageName(), 0);
 				agent += "(v" + pkgInfo.versionName + "-" + pkgInfo.versionCode	+ ") ";
 			} catch (android.content.pm.PackageManager.NameNotFoundException e) {
 				agent += "(version unknown) ";
 			}
-			*/
+			
 
 			agent += "for android";
-
-			agent = "MSIE 8.0";
 
 			HttpProtocolParams.setUserAgent(params, agent);
 
@@ -65,13 +69,13 @@ public class FeedFetcher {
 
 			try {
 				HttpGet method = new HttpGet(
-						"http://www.zooborns.com/zooborns/rss.xml");
+						"http://feeds.feedburner.com/Zooborns");
 				HttpResponse res = client.execute(method);
 				dataInput = res.getEntity().getContent();
 			} catch (IOException e) {
 				e.printStackTrace();
-				// Toast.makeText(getBaseContext(), "Network Failure...",
-				// Toast.LENGTH_SHORT).show();
+				Toast.makeText(that.getBaseContext(), "Network Failure...",
+				 Toast.LENGTH_SHORT).show();
 				return false;
 			}
 
@@ -86,21 +90,21 @@ public class FeedFetcher {
 				// finish();
 			} catch (SAXParseException e) {
 				e.printStackTrace();
-				// Toast.makeText(getBaseContext(),
-				// "SAXParseException, bad XML?",
-				// Toast.LENGTH_SHORT).show();
+				 Toast.makeText(that.getBaseContext(),
+				 "SAXParseException, bad XML?",
+				 Toast.LENGTH_SHORT).show();
 				return false;
 			} catch (SAXException e) {
 				// TODO Auto-generated catch block
-				// Toast.makeText(getBaseContext(), "SAXException",
-				// Toast.LENGTH_SHORT).show();
+				 Toast.makeText(that.getBaseContext(), "SAXException",
+				 Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 				return false;
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
-				// Toast.makeText(getBaseContext(),
-				// "ParserConfigurationException", Toast.LENGTH_SHORT)
-				// .show();
+				 Toast.makeText(that.getBaseContext(),
+				 "ParserConfigurationException", Toast.LENGTH_SHORT)
+				 .show();
 				e.printStackTrace();
 				return false;
 			} catch (IOException e) {

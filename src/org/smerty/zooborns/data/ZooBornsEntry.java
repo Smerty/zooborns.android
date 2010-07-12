@@ -15,6 +15,8 @@ public class ZooBornsEntry {
 		this.url = url;
 		this.title = title;
 		this.body = body;
+		
+		this.photos = new ArrayList<ZooBornsPhoto>();
 	}
 	
 	public String getUrl() {
@@ -51,7 +53,8 @@ public class ZooBornsEntry {
 	}
 	
 	public void addPhoto(ZooBornsPhoto photo) {
-		photos.add(photo);
+		if (photo != null)
+			photos.add(photo);
 	}
 	
 	
