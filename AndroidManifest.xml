@@ -11,7 +11,7 @@
             </intent-filter>
         </activity>
 
-    <activity android:name=".FullscreenImage" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+    <activity android:name=".FullscreenImage" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:configChanges="keyboardHidden|orientation">
     		<intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

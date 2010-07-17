@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import android.R;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -112,6 +113,14 @@ public class FullscreenImage extends Activity {
 		gestureDetector = new GestureDetector( new SwipeDetector() );
 		
 		setImage();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	  super.onConfigurationChanged(newConfig);
+	  if (fsimgview != null) {
+		  setContentView(fsimgview);
+	  }
 	}
 
 }
