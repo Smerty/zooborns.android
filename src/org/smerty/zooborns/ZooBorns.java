@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -137,6 +138,14 @@ public class ZooBorns extends Activity {
 
 		Log.d("onCreate", "done.");
 
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	  super.onConfigurationChanged(newConfig);
+	  if (gridview != null) {
+		  setContentView(gridview);
+	  }
 	}
 
 	private class UpdateFeedTask extends AsyncTask<ZooBorns, Integer, Integer> {
