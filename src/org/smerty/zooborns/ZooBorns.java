@@ -1,5 +1,7 @@
 package org.smerty.zooborns;
 
+import java.util.ArrayList;
+
 import org.smerty.cache.ImageCache;
 import org.smerty.zooborns.data.ZooBornsEntry;
 import org.smerty.zooborns.data.ZooBornsGallery;
@@ -95,6 +97,12 @@ public class ZooBorns extends Activity {
 						Intent i = new Intent(that, FullscreenImage.class);
 						i.setData(Uri.parse(that.imgCache.images.get(position)
 								.filesystemUri()));
+						i.putExtra("currentImageIndex", position);
+						ArrayList<Uri> imageUriList = new ArrayList<Uri>();
+						for (int n = 0; n < that.imgCache.images.size(); n++) {
+							imageUriList.add(Uri.parse(that.imgCache.images.get(n).filesystemUri()));
+						}
+						i.putExtra("imageUriList", imageUriList);
 						that.startActivity(i);
 					} else {
 						Log.d("onClick", "clicked on a... what did you click?");
