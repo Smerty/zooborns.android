@@ -133,7 +133,7 @@ public class CachedImage {
 			BigInteger hashed = new BigInteger(1, md.digest());
 
 			String cacheFilename = String.format("%1$032X", hashed) + ".jpg";
-			Log.d("download", "cache filename: " + cacheFilename);
+			//Log.d("download", "cache filename: " + cacheFilename);
 			File rootDir = Environment.getExternalStorageDirectory();
 			rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
 			File imgfile = new File(rootDir, cacheFilename);
