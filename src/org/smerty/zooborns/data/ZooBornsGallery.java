@@ -71,7 +71,7 @@ public class ZooBornsGallery {
 						Matcher match = null;
 						String url = null;
 
-						pat = Pattern.compile(".*<img[^>]*src=\"([^\"]*)",
+						pat = Pattern.compile("<img[^>]*src=\"([^\"]*)",
 								Pattern.CASE_INSENSITIVE);
 						match = pat.matcher(entryBody);
 						while (match.find()) {
