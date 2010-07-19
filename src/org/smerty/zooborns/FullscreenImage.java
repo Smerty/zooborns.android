@@ -6,15 +6,19 @@ import java.util.ArrayList;
 
 import android.R;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.widget.ImageView;
+import android.widget.Toast;
 public class FullscreenImage extends Activity {
 
 
@@ -122,5 +126,25 @@ public class FullscreenImage extends Activity {
 		  setContentView(fsimgview);
 	  }
 	}
+	
+    public static final int MENU_SEND = 10;
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, MENU_SEND, 0, "Send");
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case MENU_SEND:
+			Intent i=new Intent(android.content.Intent.ACTION_SEND);
+			i.setType("image/jpg");
+			i.putExtra(Intent.EXTRA_SUBJECT, "ZooBorns");
+			i.putExtra(Intent.EXTRA_STREAM, imageUriList.get(position));
+			startActivity(Intent.createChooser(i, "Share Photo Using..."));
+            return true;
+        }
+        return false;
+    }
 
 }
