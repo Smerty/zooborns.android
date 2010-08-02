@@ -2,6 +2,7 @@ package org.smerty.zooborns;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import android.R;
@@ -18,7 +19,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.widget.ImageView;
-import android.widget.Toast;
 public class FullscreenImage extends Activity {
 
 
@@ -128,9 +128,11 @@ public class FullscreenImage extends Activity {
 	}
 	
     public static final int MENU_SEND = 10;
+    public static final int MENU_WALLPAPER = 11;
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_SEND, 0, "Send");
+        menu.add(0, MENU_SEND, 0, "Share...");
+        menu.add(0, MENU_WALLPAPER, 0, "Set as Wallpaper");
         return true;
     }
 
@@ -143,6 +145,17 @@ public class FullscreenImage extends Activity {
 			i.putExtra(Intent.EXTRA_STREAM, imageUriList.get(position));
 			startActivity(Intent.createChooser(i, "Share Photo Using..."));
             return true;
+        case MENU_WALLPAPER:
+        	try {
+				that.getApplicationContext().setWallpaper(new FileInputStream(imageUriList.get(position).getPath()));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	return true;
         }
         return false;
     }
