@@ -1,6 +1,5 @@
 package org.smerty.zooborns.feed;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,7 +20,6 @@ import org.xml.sax.SAXParseException;
 
 import android.content.ComponentName;
 import android.content.pm.PackageInfo;
-import android.widget.Toast;
 
 public class FeedFetcher {
 
@@ -37,87 +35,61 @@ public class FeedFetcher {
 		return rssDoc;
 	}
 
-	public boolean pull() {
+	public boolean pull() throws Exception {
+
+
+		HttpParams params = new BasicHttpParams();
+		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+		HttpProtocolParams.setContentCharset(params, "UTF-8");
+		HttpProtocolParams.setUseExpectContinue(params, true);
+		HttpProtocolParams.setHttpElementCharset(params, "UTF-8");
+
+		String agent = "ZooBorns ";
+
+		
+		try {
+			ComponentName compName = new ComponentName(that,ZooBorns.class);
+			PackageInfo pkgInfo = that.getPackageManager().getPackageInfo(compName.getPackageName(), 0);
+			agent += "(v" + pkgInfo.versionName + "-" + pkgInfo.versionCode	+ ") ";
+		} catch (android.content.pm.PackageManager.NameNotFoundException e) {
+			agent += "(version unknown) ";
+		}
+		
+
+		agent += "for android";
+
+		HttpProtocolParams.setUserAgent(params, agent);
+
+		DefaultHttpClient client = new DefaultHttpClient(params);
+
+		InputStream dataInput = null;
+
+		HttpGet method = new HttpGet(
+				"http://feeds.feedburner.ccom/Zooborns");
+		HttpResponse res = client.execute(method);
+		dataInput = res.getEntity().getContent();
+
+		rssDoc = null;
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db;
 
 		try {
-
-			HttpParams params = new BasicHttpParams();
-			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-			HttpProtocolParams.setContentCharset(params, "UTF-8");
-			HttpProtocolParams.setUseExpectContinue(params, true);
-			HttpProtocolParams.setHttpElementCharset(params, "UTF-8");
-
-			String agent = "ZooBorns ";
-
+			db = dbf.newDocumentBuilder();
+			rssDoc = db.parse(dataInput);
+			dataInput.close();
 			
-			try {
-				ComponentName compName = new ComponentName(that,ZooBorns.class);
-				PackageInfo pkgInfo = that.getPackageManager().getPackageInfo(compName.getPackageName(), 0);
-				agent += "(v" + pkgInfo.versionName + "-" + pkgInfo.versionCode	+ ") ";
-			} catch (android.content.pm.PackageManager.NameNotFoundException e) {
-				agent += "(version unknown) ";
-			}
-			
-
-			agent += "for android";
-
-			HttpProtocolParams.setUserAgent(params, agent);
-
-			DefaultHttpClient client = new DefaultHttpClient(params);
-
-			InputStream dataInput = null;
-
-			try {
-				HttpGet method = new HttpGet(
-						"http://feeds.feedburner.com/Zooborns");
-				HttpResponse res = client.execute(method);
-				dataInput = res.getEntity().getContent();
-			} catch (IOException e) {
-				e.printStackTrace();
-				Toast.makeText(that.getBaseContext(), "Network Failure...",
-				 Toast.LENGTH_SHORT).show();
-				return false;
-			}
-
-			rssDoc = null;
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db;
-
-			try {
-				db = dbf.newDocumentBuilder();
-				rssDoc = db.parse(dataInput);
-				dataInput.close();
-				// finish();
-			} catch (SAXParseException e) {
-				e.printStackTrace();
-				 Toast.makeText(that.getBaseContext(),
-				 "SAXParseException, bad XML?",
-				 Toast.LENGTH_SHORT).show();
-				return false;
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				 Toast.makeText(that.getBaseContext(), "SAXException",
-				 Toast.LENGTH_SHORT).show();
-				e.printStackTrace();
-				return false;
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				 Toast.makeText(that.getBaseContext(),
-				 "ParserConfigurationException", Toast.LENGTH_SHORT)
-				 .show();
-				e.printStackTrace();
-				return false;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 			rssDoc.getDocumentElement().normalize();
-		}
-
-		finally {
-			
+		} catch (SAXParseException e) {
+			e.printStackTrace();
+			throw new FeedParseException();
+		} catch (SAXException e) {
+			e.printStackTrace();
+			throw new FeedParseException();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+			throw new FeedParseException();
 		}
 		return true;
 	}
 }
+

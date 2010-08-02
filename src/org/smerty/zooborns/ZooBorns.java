@@ -1,11 +1,13 @@
 package org.smerty.zooborns;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.smerty.cache.ImageCache;
 import org.smerty.zooborns.data.ZooBornsEntry;
 import org.smerty.zooborns.data.ZooBornsGallery;
 import org.smerty.zooborns.data.ZooBornsPhoto;
+import org.smerty.zooborns.feed.FeedParseException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class ZooBorns extends Activity {
@@ -159,7 +162,19 @@ public class ZooBorns extends Activity {
 
 			publishProgress(0);
 
-			that.zGallery.update();
+			try {
+				that.zGallery.update();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return 0;
+			} catch (FeedParseException e) {
+				return 0;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			} finally {
+				// clean up code here
+			}
 
 			if (that.imgCache == null) {
 				that.imgCache = new ImageCache(that);
@@ -171,8 +186,6 @@ public class ZooBorns extends Activity {
 				}
 			}
 
-			publishProgress(100);
-
 			return 0;
 		}
 
@@ -182,15 +195,20 @@ public class ZooBorns extends Activity {
 				that.progressDialog = ProgressDialog.show(that, "ZooBorns",
 						"Downloading ZooBorns XML Feed", true, false);
 			}
-			if (progress[0] == 100) {
-				that.progressDialog.dismiss();
-			}
 
+		}
+
+		protected void onCancelled() {
+			super.onCancelled();
+			that.progressDialog.dismiss();
 		}
 
 		protected void onPostExecute(Integer result) {
 			Log.d("onPostExecute", that.getApplicationInfo().packageName);
-			that.imgCache.startDownloading();
+			that.progressDialog.dismiss();
+			if (that.imgCache != null) {
+				that.imgCache.startDownloading();
+			}
 		}
 	}
 }

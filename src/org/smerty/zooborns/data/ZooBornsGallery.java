@@ -24,7 +24,7 @@ public class ZooBornsGallery {
 		this.that = that;
 	}
 
-	public boolean update() {
+	public boolean update() throws Exception {
 
 		FeedFetcher fFetcher = new FeedFetcher(that);
 
