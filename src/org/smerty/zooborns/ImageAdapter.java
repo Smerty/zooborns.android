@@ -30,7 +30,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-    	Log.d("ImageAdapter", "getView()");
+    	//Log.d("ImageAdapter", "getView()");
     	
         ImageView imageView;
         if (convertView == null) {
