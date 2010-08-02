@@ -1,5 +1,6 @@
 package org.smerty.cache;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.smerty.zooborns.ZooBorns;
@@ -64,6 +65,15 @@ public class ImageCache {
 			}
 
 			int doneCount = 0;
+			
+			for (int n = 0; n < imgCache.images.size(); n++) {
+				File imgFile = new File(imgCache.images.get(n).filesystemUri());
+				if (imgFile.exists()) {
+					imgCache.images.get(n).thumbnail(that.columnWidth);
+					imgCache.images.get(n).setComplete(true);
+					imgCache.images.get(n).setFailed(false);
+				}
+			}
 
 			for (int n = 0; n < imgCache.images.size(); n++) {
 				Log.d("DownloadFilesTask:doInBackground", imgCache.images
@@ -73,6 +83,7 @@ public class ImageCache {
 				}
 
 				if (imgCache.images.get(n).download()) {
+					imgCache.images.get(n).thumbnail(that.columnWidth);
 					imgCache.images.get(n).setComplete(true);
 					imgCache.images.get(n).setFailed(false);
 					Log.d("DownloadFilesTask:doInBackground", "success");

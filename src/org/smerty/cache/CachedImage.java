@@ -1,6 +1,8 @@
 package org.smerty.cache;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +12,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -141,6 +147,53 @@ public class CachedImage {
 		}
 		return "";
 	}
+	
+	public boolean thumbnail(int size) {
+		Drawable image;
+		try {
+			image = Drawable.createFromStream(new FileInputStream(Uri.parse(
+					this.filesystemUri()).getPath()), "src");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		Bitmap bitmapOrg = ((BitmapDrawable) image).getBitmap();
+
+		if (bitmapOrg == null) {
+			// failed
+		} else {
+			int width = bitmapOrg.getWidth();
+			int height = bitmapOrg.getHeight();
+
+			int newWidth = size;
+			int newHeight = size;
+
+			int offsetX = 0;
+			int offsetY = 0;
+
+			if (width > height) {
+				offsetX = (width - height) / 2;
+			} else if (height > width) {
+				offsetY = (height - width) / 2;
+			} else {
+				// do nothing
+			}
+
+			float scaleWidth = ((float) newWidth) / (width - (offsetX * 2));
+			float scaleHeight = ((float) newHeight) / (height - (offsetY * 2));
+
+			Matrix matrix = new Matrix();
+			matrix.postScale(scaleWidth, scaleHeight);
+
+			this.bitmapIcon = Bitmap
+					.createBitmap(bitmapOrg, offsetX, offsetY, width
+							- (offsetX * 2), height - (offsetY * 2), matrix,
+							true);
+		}
+		return true;
+	}
 
 	public boolean download() {
 
@@ -196,6 +249,9 @@ public class CachedImage {
 
 						imgout.close();
 						ism.close();
+					
+						
+						
 						return true;
 
 					} else {

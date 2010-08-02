@@ -1,11 +1,7 @@
 package org.smerty.zooborns;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 import android.R;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +45,17 @@ public class ImageAdapter extends BaseAdapter {
         	Drawable image;
         	
         	try {
-				image = Drawable.createFromStream(new FileInputStream(Uri.parse(that.imgCache.images.get(position).filesystemUri()).getPath()), "src");
-				imageView.setImageDrawable(image);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				imageView.setImageDrawable(that.getResources().getDrawable(R.drawable.ic_menu_delete));
-			}
+        		if (that.imgCache.images.get(position).getBitmapIcon() != null) {
+         		imageView.setImageBitmap(that.imgCache.images.get(position).getBitmapIcon());
+        		
+        		}
+        		else {
+        			imageView.setImageDrawable(that.getResources().getDrawable(R.drawable.ic_menu_delete));
+        		}
+			} 
+        	finally {
+        		//do nothing
+        	}
         }
         else {
         	imageView.setImageDrawable(that.getResources().getDrawable(R.drawable.ic_menu_help));
