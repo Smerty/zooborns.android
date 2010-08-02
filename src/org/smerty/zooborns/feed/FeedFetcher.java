@@ -65,7 +65,7 @@ public class FeedFetcher {
 		InputStream dataInput = null;
 
 		HttpGet method = new HttpGet(
-				"http://feeds.feedburner.ccom/Zooborns");
+				"http://feeds.feedburner.com/Zooborns");
 		HttpResponse res = client.execute(method);
 		dataInput = res.getEntity().getContent();
 
