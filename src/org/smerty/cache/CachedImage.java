@@ -148,6 +148,39 @@ public class CachedImage {
 		return "";
 	}
 	
+	public File getImageFile() {
+		if (this.getUrl() != null && this.getUrl().length() > 0) {
+			MessageDigest md;
+			try {
+				md = MessageDigest.getInstance("MD5");
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				return null;
+			}
+
+			byte[] urlBytes = this.getUrl().getBytes();
+			md.update(urlBytes, 0, urlBytes.length);
+			BigInteger hashed = new BigInteger(1, md.digest());
+
+			String cacheFilename = String.format("%1$032X", hashed) + ".jpg";
+			//Log.d("download", "cache filename: " + cacheFilename);
+			File rootDir = Environment.getExternalStorageDirectory();
+			rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
+			File imgfile = new File(rootDir, cacheFilename);
+			return imgfile;
+		}
+		return null;
+	}
+	
+	public boolean imageFileExists() {
+		boolean retval = false;
+		if (this.getImageFile() != null) {
+			retval = this.getImageFile().exists();
+		}
+		return retval;
+	}
+	
 	public boolean thumbnail(int size) {
 		Drawable image;
 		try {
@@ -159,10 +192,15 @@ public class CachedImage {
 			return false;
 		}
 
+		if (image == null) {
+			return false;
+		}
+		
 		Bitmap bitmapOrg = ((BitmapDrawable) image).getBitmap();
 
 		if (bitmapOrg == null) {
 			// failed
+			return false;
 		} else {
 			int width = bitmapOrg.getWidth();
 			int height = bitmapOrg.getHeight();

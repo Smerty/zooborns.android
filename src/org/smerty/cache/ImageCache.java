@@ -67,8 +67,8 @@ public class ImageCache {
 			int doneCount = 0;
 			
 			for (int n = 0; n < imgCache.images.size(); n++) {
-				File imgFile = new File(imgCache.images.get(n).filesystemUri());
-				if (imgFile.exists()) {
+				if (imgCache.images.get(n).imageFileExists()) {
+					Log.d("DownloadFilesTask:doInBackground", "skipping, marking complete");
 					imgCache.images.get(n).thumbnail(that.columnWidth);
 					imgCache.images.get(n).setComplete(true);
 					imgCache.images.get(n).setFailed(false);
