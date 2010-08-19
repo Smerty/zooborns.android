@@ -1,6 +1,5 @@
 package org.smerty.cache;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.smerty.zooborns.ZooBorns;
