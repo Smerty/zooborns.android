@@ -1,7 +1,6 @@
 package org.smerty.zooborns;
 
 import android.R;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -41,7 +40,6 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
         if (position < that.imgCache.images.size() && (that.imgCache.images.get(position).isComplete() || that.imgCache.images.get(position).isFailed())) {
-        	Drawable image;
         	
         	try {
         		if (that.imgCache.images.get(position).getBitmapIcon() != null) {
