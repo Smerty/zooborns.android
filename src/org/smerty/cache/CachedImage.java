@@ -15,44 +15,28 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 
 public class CachedImage {
 
 	private String url;
-	private String filename;
+	private File imagefile;
 	private boolean complete;
 	private boolean failed;
 	private int retries;
 	private boolean inProgress;
 	private Bitmap bitmapIcon;
-
-	public CachedImage(String url) {
-		super();
-		this.url = url;
-		this.complete = false;
-		this.failed = false;
-		this.retries = 0;
-		this.inProgress = false;
+	
+	@SuppressWarnings("unused")
+	private CachedImage() {
+		
 	}
 
-	public CachedImage(String url, String filename) {
+	public CachedImage(String url, File rootDir) {
 		super();
 		this.url = url;
-		this.filename = filename;
+		this.imagefile = new File(rootDir, this.getCacheFilename());
 		this.complete = false;
-		this.failed = false;
-		this.retries = 0;
-		this.inProgress = false;
-	}
-
-	public CachedImage(String url, String filename, boolean complete) {
-		super();
-		this.url = url;
-		this.filename = filename;
-		this.complete = complete;
 		this.failed = false;
 		this.retries = 0;
 		this.inProgress = false;
@@ -62,8 +46,8 @@ public class CachedImage {
 		return url;
 	}
 
-	public String getFilename() {
-		return filename;
+	public File getFilename() {
+		return this.imagefile;
 	}
 
 	public boolean isComplete() {
@@ -74,8 +58,8 @@ public class CachedImage {
 		this.url = url;
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public void setFilename(File imagefile) {
+		this.imagefile = imagefile;
 	}
 
 	public void setComplete(boolean complete) {
@@ -120,59 +104,35 @@ public class CachedImage {
 	}
 
 	public boolean delete() {
-		return true;
+		return this.getImageFile().delete();
 	}
 
 	public String filesystemUri() {
-		if (this.getUrl() != null && this.getUrl().length() > 0) {
-			MessageDigest md;
-			try {
-				md = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				return "";
-			}
-
-			byte[] urlBytes = this.getUrl().getBytes();
-			md.update(urlBytes, 0, urlBytes.length);
-			BigInteger hashed = new BigInteger(1, md.digest());
-
-			String cacheFilename = String.format("%1$032X", hashed) + ".jpg";
-			//Log.d("download", "cache filename: " + cacheFilename);
-			File rootDir = Environment.getExternalStorageDirectory();
-			rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
-			File imgfile = new File(rootDir, cacheFilename);
-			return "file://" + imgfile.getAbsolutePath();
-		}
-		return "";
+		return "file://" + this.getImageFile().getAbsolutePath();
 	}
-	
+
 	public File getImageFile() {
-		if (this.getUrl() != null && this.getUrl().length() > 0) {
-			MessageDigest md;
-			try {
-				md = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				return null;
-			}
-
-			byte[] urlBytes = this.getUrl().getBytes();
-			md.update(urlBytes, 0, urlBytes.length);
-			BigInteger hashed = new BigInteger(1, md.digest());
-
-			String cacheFilename = String.format("%1$032X", hashed) + ".jpg";
-			//Log.d("download", "cache filename: " + cacheFilename);
-			File rootDir = Environment.getExternalStorageDirectory();
-			rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
-			File imgfile = new File(rootDir, cacheFilename);
-			return imgfile;
-		}
-		return null;
+		return this.imagefile;
 	}
-	
+
+	public String getCacheFilename() {
+
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return null;
+		}
+
+		byte[] urlBytes = this.getUrl().getBytes();
+		md.update(urlBytes, 0, urlBytes.length);
+		BigInteger hashed = new BigInteger(1, md.digest());
+
+		return String.format("%1$032X", hashed) + ".jpg";
+	}
+
 	public boolean imageFileExists() {
 		boolean retval = false;
 		if (this.getImageFile() != null) {
@@ -180,12 +140,11 @@ public class CachedImage {
 		}
 		return retval;
 	}
-	
+
 	public boolean thumbnail(int size) {
 		Drawable image;
 		try {
-			image = Drawable.createFromStream(new FileInputStream(Uri.parse(
-					this.filesystemUri()).getPath()), "src");
+			image = Drawable.createFromStream(new FileInputStream(this.getImageFile()), "src");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -195,7 +154,7 @@ public class CachedImage {
 		if (image == null) {
 			return false;
 		}
-		
+
 		Bitmap bitmapOrg = ((BitmapDrawable) image).getBitmap();
 
 		if (bitmapOrg == null) {
@@ -236,72 +195,29 @@ public class CachedImage {
 	public boolean download() {
 
 		if (this.getUrl() != null && this.getUrl().length() > 0) {
-			MessageDigest md;
-			try {
-				md = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				return false;
-			}
-
-			byte[] urlBytes = this.getUrl().getBytes();
-			md.update(urlBytes, 0, urlBytes.length);
-			BigInteger hashed = new BigInteger(1, md.digest());
-
-			String cacheFilename = String.format("%1$032X", hashed) + ".jpg";
-			Log.d("download", "cache filename: " + cacheFilename);
-			File rootDir = Environment.getExternalStorageDirectory();
-
-			rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
-
-			if (!rootDir.isDirectory()) {
-				if (rootDir.mkdir()) {
-					Log.d("download", "mkdir: " + rootDir.getAbsolutePath());
-				} else {
-					Log.d("download", "mkdir failed: "
-							+ rootDir.getAbsolutePath());
-				}
-			}
-
-			File imgfile = new File(rootDir, cacheFilename);
-
+			File imgfile = this.getImageFile();
 			Log.d("download", "cache full path: " + imgfile.getAbsolutePath());
+			try {
+				URL iconURL = null;
+				iconURL = new URL(this.getUrl());
+				Log.d("download", "Fetching: " + iconURL.toString());
+				FileOutputStream imgout = new FileOutputStream(imgfile);
+				InputStream ism = iconURL.openStream();
 
-			if (!imgfile.exists()) {
-				Log.d("download", "img file doesn't exist");
-				try {
-					if (rootDir.canWrite()) {
-						URL iconURL = null;
-						iconURL = new URL(this.getUrl());
-						Log.d("download", "Fetching: " + iconURL.toString());
-						FileOutputStream imgout = new FileOutputStream(imgfile);
-						InputStream ism = iconURL.openStream();
+				byte[] buffer = new byte[1024];
+				int bytesRead;
 
-						byte[] buffer = new byte[1024];
-						int bytesRead;
-
-						while ((bytesRead = ism.read(buffer, 0, 1024)) >= 0) {
-							imgout.write(buffer, 0, bytesRead);
-						}
-
-						imgout.close();
-						ism.close();
-					
-						
-						
-						return true;
-
-					} else {
-						Log.d("download", "cant write");
-					}
-				} catch (IOException e) {
-					Log.e("download", "Could not write file " + e.getMessage());
-					return false;
+				while ((bytesRead = ism.read(buffer, 0, 1024)) >= 0) {
+					imgout.write(buffer, 0, bytesRead);
 				}
-			}
-			else {
+
+				imgout.close();
+				ism.close();
+
 				return true;
+			} catch (IOException e) {
+				Log.e("download", "Could not write file " + e.getMessage());
+				return false;
 			}
 		}
 		return false;
