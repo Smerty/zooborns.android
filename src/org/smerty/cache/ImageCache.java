@@ -88,34 +88,16 @@ public class ImageCache {
 					imgCache.images.get(n).setFailed(false);
 					Log.d("DownloadFilesTask:doInBackground", "success");
 				} else {
-					Log.d("DownloadFilesTask:doInBackground", "1st failure");
-					if (imgCache.images.get(n).download()) {
-						imgCache.images.get(n).setComplete(true);
-						imgCache.images.get(n).setFailed(false);
-						Log.d("DownloadFilesTask:doInBackground", "success!");
-					} else {
-						Log
-								.d("DownloadFilesTask:doInBackground",
-										"2nd failure");
-						if (imgCache.images.get(n).download()) {
-							imgCache.images.get(n).setComplete(true);
-							imgCache.images.get(n).setFailed(false);
-							Log.d("DownloadFilesTask:doInBackground",
-									"success!!");
-						} else {
-							Log.d("DownloadFilesTask:doInBackground",
-									"3rd failure");
-							imgCache.images.get(n).setFailed(true);
-							imgCache.images
-									.get(n)
-									.setBitmapIcon(
-											((BitmapDrawable) that
-													.getResources()
-													.getDrawable(
-															android.R.drawable.ic_menu_close_clear_cancel))
-													.getBitmap());
-						}
-					}
+					Log.d("DownloadFilesTask:doInBackground", "failure");
+					imgCache.images.get(n).setFailed(true);
+					imgCache.images
+							.get(n)
+							.setBitmapIcon(
+									((BitmapDrawable) that
+											.getResources()
+											.getDrawable(
+													android.R.drawable.ic_menu_close_clear_cancel))
+											.getBitmap());
 				}
 				publishProgress((int) ((doneCount++ / (float) imgCache.images
 						.size()) * 100));
