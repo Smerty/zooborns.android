@@ -5,8 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.smerty.cache.CachedImage;
+import org.smerty.zooborns.data.ZooBornsEntry;
+import org.smerty.zooborns.data.ZooBornsGallery;
+import org.smerty.zooborns.data.ZooBornsPhoto;
+
 import android.R;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -19,6 +26,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.widget.ImageView;
+import android.widget.Toast;
 public class FullscreenImage extends Activity {
 
 
@@ -41,7 +49,7 @@ public class FullscreenImage extends Activity {
 					return false;
 				if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
 						&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-					if (position < imageUriList.size() - 1) {
+					if (position < cachedImageList.size() - 1) {
 						position++;
 						setImage();
 					}
@@ -65,8 +73,23 @@ public class FullscreenImage extends Activity {
 		gestureDetector.onTouchEvent(event);
 		return true;
 	}
-
-	private ArrayList<Uri> imageUriList;
+	
+	
+	private ZooBornsEntry getEntryFromCachedImage(CachedImage cachedImage) {
+		
+		for (ZooBornsEntry entry : gallery.getEntries()) {
+			for (ZooBornsPhoto photo : entry.getPhotos()) {
+				if (photo.url.equals(cachedImage.getUrl())) {
+					return entry;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private String title;
+	private ArrayList<CachedImage> cachedImageList;
+	private ZooBornsGallery gallery;
 	private int position = -1;
 	private ImageView fsimgview;
 	
@@ -81,14 +104,21 @@ public class FullscreenImage extends Activity {
 		if (fsimgview != null) {
 			if (position < 0) {
 				position = this.getIntent().getIntExtra("currentImageIndex", 0);
-				imageUriList = (ArrayList<Uri>) this.getIntent().getSerializableExtra("imageUriList");
+				cachedImageList = (ArrayList<CachedImage>) this.getIntent().getSerializableExtra("cachedImageList");
+				gallery = (ZooBornsGallery) this.getIntent().getSerializableExtra("gallery");
 			}
-			Uri imgUri = imageUriList.get(position);
-			if (imgUri != null) {
+			if (cachedImageList.get(position).imageFileExists()) {
 				Drawable image;
 				try {
-					image = Drawable.createFromStream(new FileInputStream(imgUri.getPath()), "src");
+					image = Drawable.createFromStream(new FileInputStream(cachedImageList.get(position).getImageFile()), "src");
 					fsimgview.setImageDrawable(image);
+					ZooBornsEntry entry = this.getEntryFromCachedImage(cachedImageList.get(position));
+					if (entry != null && entry.getTitle() != null && entry.getTitle().length() > 0) {
+						if (!entry.getTitle().equals(this.title)) {
+							this.title = entry.getTitle();
+							Toast.makeText(this.getBaseContext(), this.title, Toast.LENGTH_SHORT).show();
+						}
+					}
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -129,25 +159,57 @@ public class FullscreenImage extends Activity {
 	
     public static final int MENU_SEND = 10;
     public static final int MENU_WALLPAPER = 11;
+    public static final int MENU_FULLSTORY = 12;
+    public static final int MENU_LAUNCHZBDC = 13;
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_SEND, 0, "Share...");
+    	menu.add(0, MENU_SEND, 0, "Share Photo...");
+    	menu.add(0, MENU_FULLSTORY, 0, "Full Story");
+        menu.add(0, MENU_LAUNCHZBDC, 0, "Open in Broswer");
         menu.add(0, MENU_WALLPAPER, 0, "Set as Wallpaper");
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
+    	ZooBornsEntry entry = this.getEntryFromCachedImage(cachedImageList.get(position));
+    	Intent i;
         switch (item.getItemId()) {
         case MENU_SEND:
-			Intent i=new Intent(android.content.Intent.ACTION_SEND);
+			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("image/jpg");
-			i.putExtra(Intent.EXTRA_SUBJECT, "ZooBorns");
-			i.putExtra(Intent.EXTRA_STREAM, imageUriList.get(position));
+			if (entry != null && entry.getTitle() != null && entry.getTitle().length() > 0) {
+				i.putExtra(Intent.EXTRA_SUBJECT, "ZooBorns: " + entry.getTitle());
+			}
+			else {
+				i.putExtra(Intent.EXTRA_SUBJECT, "ZooBorns");
+			}
+			i.putExtra(Intent.EXTRA_STREAM, Uri.parse(cachedImageList.get(position).filesystemUri()));
 			startActivity(Intent.createChooser(i, "Share Photo Using..."));
+            return true;
+        case MENU_FULLSTORY:
+        	if (entry != null && entry.getBody() != null && entry.getBody().length() > 0) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setMessage(entry.getBody())
+				       .setCancelable(true)
+				       .setNegativeButton("Done", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				                dialog.cancel();
+				           }
+				       });
+				AlertDialog alert = builder.create();
+				alert.show();
+        	}
+        	return true;
+        case MENU_LAUNCHZBDC:
+        	if (entry != null && entry.getUrl() != null && entry.getUrl().length() > 0) {
+				i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse(entry.getUrl()));
+				startActivity(i);
+        	}
             return true;
         case MENU_WALLPAPER:
         	try {
-				that.getApplicationContext().setWallpaper(new FileInputStream(imageUriList.get(position).getPath()));
+				that.getApplicationContext().setWallpaper(new FileInputStream(cachedImageList.get(position).getImageFile()));
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

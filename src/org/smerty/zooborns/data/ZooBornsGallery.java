@@ -1,10 +1,10 @@
 package org.smerty.zooborns.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.smerty.zooborns.ZooBorns;
 import org.smerty.zooborns.feed.FeedFetcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,23 +13,21 @@ import org.w3c.dom.NodeList;
 
 import android.util.Log;
 
-public class ZooBornsGallery {
+public class ZooBornsGallery implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	public ArrayList<ZooBornsEntry> entries;
-	private ZooBorns that;
 
-	public ZooBornsGallery(ZooBorns that) {
+	public ZooBornsGallery() {
 		super();
 		entries = new ArrayList<ZooBornsEntry>();
-		this.that = that;
 	}
 
 	public boolean update() throws Exception {
 
-		FeedFetcher fFetcher = new FeedFetcher(that);
-
+		FeedFetcher fFetcher = new FeedFetcher();
 		fFetcher.pull();
-
 		Document doc = fFetcher.getDoc();
 
 		if (doc == null) {
@@ -51,11 +49,23 @@ public class ZooBornsGallery {
 				NodeList fstNm = fstNmElmnt.getChildNodes();
 
 				String title = ((Node) fstNm.item(0)).getNodeValue();
+				
+				fstNmElmntLst = fstElmnt.getElementsByTagName("feedburner:origLink");
+				fstNmElmnt = (Element) fstNmElmntLst.item(0);
+				fstNm = fstNmElmnt.getChildNodes();
+
+				String entryUrl = ((Node) fstNm.item(0)).getNodeValue();
+				
+				fstNmElmntLst = fstElmnt.getElementsByTagName("content");
+				fstNmElmnt = (Element) fstNmElmntLst.item(0);
+				fstNm = fstNmElmnt.getChildNodes();
+
+				String entryContent = ((Node) fstNm.item(0)).getNodeValue();
 
 				if (title != null && title.length() > 0) {
 					Log.d("ZooBornsGallery", "Entry Title : " + title);
 
-					ZooBornsEntry zE = new ZooBornsEntry(null, title, null);
+					ZooBornsEntry zE = new ZooBornsEntry(entryUrl, title, entryContent);
 
 					NodeList contentNodes = fstElmnt
 							.getElementsByTagName("content");
@@ -96,6 +106,14 @@ public class ZooBornsGallery {
 
 	public boolean addEntry(ZooBornsEntry entry) {
 		return entries.add(entry);
+	}
+	
+	public ArrayList<ZooBornsEntry> getEntries() {
+		return entries;
+	}
+	
+	public ZooBornsEntry get(int index) {
+		return entries.get(index);
 	}
 
 }

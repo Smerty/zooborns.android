@@ -1,8 +1,11 @@
 package org.smerty.zooborns.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ZooBornsEntry {
+public class ZooBornsEntry implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 
 	public String url;
 	public String title;
@@ -33,11 +36,11 @@ public class ZooBornsEntry {
 	}
 	
 	public String getBody() {
-		return body;
+		return body.replaceAll("<(.*?)*>", "").trim();
 	}
 	
 	public String getBodyRaw() {
-		return body; // remove html tags
+		return body;
 	}
 	
 	public void setBody(String body) {

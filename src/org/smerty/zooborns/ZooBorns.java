@@ -3,6 +3,7 @@ package org.smerty.zooborns;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.smerty.cache.CachedImage;
 import org.smerty.cache.ImageCache;
 import org.smerty.zooborns.data.ZooBornsEntry;
 import org.smerty.zooborns.data.ZooBornsGallery;
@@ -20,6 +21,8 @@ import android.os.Bundle;
 import android.os.AsyncTask.Status;
 import android.util.Log;
 import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -100,11 +103,9 @@ public class ZooBorns extends Activity {
 						i.setData(Uri.parse(that.imgCache.images.get(position)
 								.filesystemUri()));
 						i.putExtra("currentImageIndex", position);
-						ArrayList<Uri> imageUriList = new ArrayList<Uri>();
-						for (int n = 0; n < that.imgCache.images.size(); n++) {
-							imageUriList.add(Uri.parse(that.imgCache.images.get(n).filesystemUri()));
-						}
-						i.putExtra("imageUriList", imageUriList);
+						ArrayList<CachedImage> cachedImageList = that.imgCache.getImages();
+						i.putExtra("cachedImageList", cachedImageList);
+						i.putExtra("gallery", zGallery);
 						that.startActivity(i);
 					} else {
 						Log.d("onClick", "clicked on a... what did you click?");
@@ -121,7 +122,7 @@ public class ZooBorns extends Activity {
 		}
 
 		if (zGallery == null) {
-			zGallery = new ZooBornsGallery(this);
+			zGallery = new ZooBornsGallery();
 
 			if (this.updatetask == null) {
 				Log.d("startDownloading", "task was null, calling execute");
@@ -209,5 +210,27 @@ public class ZooBorns extends Activity {
 				that.imgCache.startDownloading();
 			}
 		}
+	}
+	
+	public static final int MENU_QUIT = 10;
+	public static final int MENU_REFRESH = 11;
+
+
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0, MENU_QUIT, 0, "Exit");
+		return true;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case MENU_QUIT:
+			this.finish();
+			return true;
+		case MENU_REFRESH:
+			
+			return true;
+
+		}
+		return false;
 	}
 }

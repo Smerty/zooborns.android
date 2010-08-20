@@ -59,6 +59,10 @@ public class ImageCache {
 
 		return active;
 	}
+	
+	public ArrayList<CachedImage> getImages() {
+		return images;
+	}
 
 	public boolean purge() {
 

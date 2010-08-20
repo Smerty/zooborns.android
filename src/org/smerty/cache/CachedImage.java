@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -17,7 +18,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
-public class CachedImage {
+public class CachedImage implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String url;
 	private File imagefile;
@@ -25,7 +28,7 @@ public class CachedImage {
 	private boolean failed;
 	private int retries;
 	private boolean inProgress;
-	private Bitmap bitmapIcon;
+	transient private Bitmap bitmapIcon;
 	
 	@SuppressWarnings("unused")
 	private CachedImage() {

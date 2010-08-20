@@ -1,6 +1,10 @@
 package org.smerty.zooborns.data;
 
-public class ZooBornsPhoto {
+import java.io.Serializable;
+
+public class ZooBornsPhoto implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 
 	public String url;
 	public String title;
