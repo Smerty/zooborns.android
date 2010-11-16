@@ -193,7 +193,7 @@ public class ZooBorns extends Activity {
 			Log.d("onProgressUpdate", progress[0].toString());
 			if (progress[0] == 0) {
 				that.progressDialog = ProgressDialog.show(that, "ZooBorns",
-						"Downloading ZooBorns XML Feed", true, false);
+						"Downloading ZooBorns Feed", true, false);
 			}
 
 		}
