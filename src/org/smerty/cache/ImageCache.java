@@ -125,7 +125,7 @@ public class ImageCache {
 
 			// delete files which are not in the feed
 			for (File file : rootDir.listFiles()) {
-				if (!imgCache.isActive(file)) {
+				if (!imgCache.isActive(file) && !file.getName().equalsIgnoreCase("cache.file")) {
 					Log.d("DownloadFilesTask:doInBackground", "Deleting old image: " + file.getAbsolutePath());
 					file.delete();
 				} 

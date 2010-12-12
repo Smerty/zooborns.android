@@ -1,7 +1,19 @@
 package org.smerty.zooborns;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.smerty.cache.CachedImage;
 import org.smerty.cache.ImageCache;
@@ -14,11 +26,13 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.AsyncTask.Status;
+import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -26,8 +40,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 
 public class ZooBorns extends Activity {
 
@@ -163,7 +177,57 @@ public class ZooBorns extends Activity {
 			publishProgress(0);
 
 			try {
-				that.zGallery.update();
+				SharedPreferences settings = getSharedPreferences(
+						"ZooBornsPrefs", 0);
+				String etag = settings.getString("etag", null);
+
+				that.zGallery.update(etag);
+
+				File rootDir = Environment.getExternalStorageDirectory();
+				rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
+
+				if (!rootDir.isDirectory()) {
+					if (rootDir.mkdir()) {
+						Log.d("download", "mkdir: " + rootDir.getAbsolutePath());
+					} else {
+						Log.d("download",
+								"mkdir failed: " + rootDir.getAbsolutePath());
+						throw new RuntimeException(
+								"failed to create storage directory");
+					}
+				}
+
+				if (!rootDir.canWrite()) {
+					throw new RuntimeException("storage directory not writable");
+				}
+
+				File cache = new File(rootDir, "cache.file");
+
+				if (that.zGallery.getEtag() != null) {
+					SharedPreferences.Editor editor = settings.edit();
+					editor.putString("etag", that.zGallery.getEtag());
+					editor.commit();
+
+					OutputStream file = new FileOutputStream(cache);
+					ObjectOutput output = new ObjectOutputStream(file);
+					try {
+						output.writeObject(that.zGallery);
+					} finally {
+						output.close();
+					}
+				} else {
+
+					InputStream file = new FileInputStream(cache);
+					ObjectInput input = new ObjectInputStream(file);
+					try {
+						// deserialize the List
+						that.zGallery = (ZooBornsGallery) input.readObject();
+					} finally {
+						input.close();
+					}
+
+				}
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 				return 0;
