@@ -1,11 +1,14 @@
 package org.smerty.zooborns.feed;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.HttpGet;
@@ -17,9 +20,13 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import android.util.Log;
+
 public class FeedFetcher {
 
 	private Document rssDoc;
+	
+	private String etag;
 	
 	public FeedFetcher() {
 		super();
@@ -29,7 +36,11 @@ public class FeedFetcher {
 		return rssDoc;
 	}
 
-	public boolean pull() throws Exception {
+	public String getEtag() {
+		return etag;
+	}
+	
+	public UpdateStatus pull(String etag) throws Exception {
 
 
 		HttpParams params = new BasicHttpParams();
@@ -46,13 +57,34 @@ public class FeedFetcher {
 		HttpProtocolParams.setUserAgent(params, agent);
 
 		DefaultHttpClient client = new DefaultHttpClient(params);
-
+		
 		InputStream dataInput = null;
 
 		HttpGet method = new HttpGet(
 				"http://feeds.feedburner.com/Zooborns");
+		if (etag != null) {
+			method.addHeader("If-None-Match", etag);
+		}
 		HttpResponse res = client.execute(method);
+		
+		Map<String, String> responseHeaderMap = new HashMap<String, String>();
+		
+		for (Header h : res.getAllHeaders()) {
+			Log.d("FeedFetcher", h.getName() + ": " + h.getValue());
+			responseHeaderMap.put(h.getName(), h.getValue());
+		}
+		
+		if (res.getStatusLine().getStatusCode() == 304) {
+			// feed not modified
+			return UpdateStatus.NOT_MODIFIED;
+		}
+		else {
+			if (responseHeaderMap.containsKey("ETag"))
+			this.etag = responseHeaderMap.get("ETag");
+		}
+		
 		dataInput = res.getEntity().getContent();
+		
 
 		rssDoc = null;
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -74,7 +106,7 @@ public class FeedFetcher {
 			e.printStackTrace();
 			throw new FeedParseException();
 		}
-		return true;
+		return UpdateStatus.COMPLETE;
 	}
 }
 

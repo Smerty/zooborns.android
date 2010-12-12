@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.smerty.zooborns.feed.FeedFetcher;
+import org.smerty.zooborns.feed.UpdateStatus;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -17,17 +18,31 @@ public class ZooBornsGallery implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	private String etag;
+	
 	public ArrayList<ZooBornsEntry> entries;
 
 	public ZooBornsGallery() {
 		super();
 		entries = new ArrayList<ZooBornsEntry>();
 	}
+	
+	public String getEtag() {
+		return etag;
+	}
 
-	public boolean update() throws Exception {
+	public boolean update(String etag) throws Exception {
 
 		FeedFetcher fFetcher = new FeedFetcher();
-		fFetcher.pull();
+		
+		if (fFetcher.pull(etag) == UpdateStatus.NOT_MODIFIED) {
+			return true;
+		}
+		else {
+			//update etag
+			this.etag = fFetcher.getEtag();
+		}
+		
 		Document doc = fFetcher.getDoc();
 
 		if (doc == null) {
