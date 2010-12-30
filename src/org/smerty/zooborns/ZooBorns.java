@@ -1,7 +1,5 @@
 package org.smerty.zooborns;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,7 +11,6 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.smerty.cache.CachedImage;
 import org.smerty.cache.ImageCache;
@@ -278,9 +275,11 @@ public class ZooBorns extends Activity {
 	
 	public static final int MENU_QUIT = 10;
 	public static final int MENU_REFRESH = 11;
+	public static final int MENU_CLEAR = 12;
 
 
 	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0, MENU_CLEAR, 0, "Purge Data");
 		menu.add(0, MENU_QUIT, 0, "Exit");
 		return true;
 	}
@@ -288,6 +287,25 @@ public class ZooBorns extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case MENU_QUIT:
+			this.finish();
+			return true;
+		case MENU_CLEAR:
+			
+			SharedPreferences settings = getSharedPreferences(
+					"ZooBornsPrefs", 0);
+			
+			SharedPreferences.Editor editor = settings.edit();
+			//editor.putString("etag", null);
+			editor.remove("etag");
+			editor.commit();
+			
+			File rootDir = Environment.getExternalStorageDirectory();
+			rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
+			
+			for (File file : rootDir.listFiles()) {
+					Log.d("CLEAR IT", "Deleting old image: " + file.getAbsolutePath());
+					file.delete();
+			}
 			this.finish();
 			return true;
 		case MENU_REFRESH:
