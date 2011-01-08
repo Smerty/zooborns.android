@@ -299,12 +299,18 @@ public class ZooBorns extends Activity {
 			editor.remove("etag");
 			editor.commit();
 			
+			// this should be replaced with the purge method in ImageCache
 			File rootDir = Environment.getExternalStorageDirectory();
 			rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
 			
 			for (File file : rootDir.listFiles()) {
 					Log.d("CLEAR IT", "Deleting old image: " + file.getAbsolutePath());
-					file.delete();
+					if(!file.delete()) {
+						Log.d("purge", "Can't delete: " + file.getAbsolutePath());
+					}
+					else {
+						Log.d("purge", "Deleted: " + file.getAbsolutePath());
+					}
 			}
 			this.finish();
 			return true;

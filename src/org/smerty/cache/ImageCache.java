@@ -70,7 +70,12 @@ public class ImageCache {
 		rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
 
 		for (File file : rootDir.listFiles()) {
-			file.delete();
+			if(!file.delete()) {
+				Log.d("purge", "Can't delete: " + file.getAbsolutePath());
+			}
+			else {
+				Log.d("purge", "Deleted: " + file.getAbsolutePath());
+			}
 		}
 
 		return true;
@@ -127,7 +132,12 @@ public class ImageCache {
 			for (File file : rootDir.listFiles()) {
 				if (!imgCache.isActive(file) && !file.getName().equalsIgnoreCase("cache.file")) {
 					Log.d("DownloadFilesTask:doInBackground", "Deleting old image: " + file.getAbsolutePath());
-					file.delete();
+					if(!file.delete()) {
+						Log.d("DownloadFilesTask:doInBackground", "Can't delete: " + file.getAbsolutePath());
+					}
+					else {
+						Log.d("DownloadFilesTask:doInBackground", "Deleted: " + file.getAbsolutePath());
+					}
 				} 
 			}
 
