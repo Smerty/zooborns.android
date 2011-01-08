@@ -7,6 +7,11 @@
     <packaging>apk</packaging>
     <name>ZooBorns</name>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <compileSource>1.6</compileSource>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.google.android</groupId>
@@ -38,12 +43,57 @@
         		<artifactId>maven-compiler-plugin</artifactId>
         		<version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>${compileSource}</source>
+                    <target>${compileSource}</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+    
+    <reporting>
+	  <plugins>
+	    <plugin>
+	      <groupId>org.codehaus.mojo</groupId>
+	      <artifactId>findbugs-maven-plugin</artifactId>
+	      <version>2.3</version>
+	      <configuration>
+             <excludeFilterFile>${basedir}/analysis/findbugs_exclude.xml</excludeFilterFile>
+	         <findbugsXmlOutput>true</findbugsXmlOutput>
+	         <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+	         <xmlOutput>true</xmlOutput>
+	      </configuration>
+	    </plugin>
+	    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <targetJdk>${compileSource}</targetJdk>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.6</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <formats>
+            <format>html</format>
+            <format>xml</format>
+          </formats>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+	  </plugins>
+	</reporting>
 
     <scm>
         <connection>scm:git:git://github.com/ppicazo/zooborns.android.git</connection>
