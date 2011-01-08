@@ -1,6 +1,7 @@
 package org.smerty.zooborns;
 
 import android.R;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -10,7 +11,6 @@ import android.widget.ImageView;
 public class ImageAdapter extends BaseAdapter {
     private ZooBorns that;
     
-
     public ImageAdapter(ZooBorns c) {
     	that = c;
     }
@@ -37,7 +37,13 @@ public class ImageAdapter extends BaseAdapter {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(1, 1, 1, 1);
         } else {
-            imageView = (ImageView) convertView;
+        	if (convertView instanceof ImageView) {
+        		imageView = (ImageView) convertView;
+        	}
+        	else {
+        		Log.d("ImageAdapter:getView", "View was not an ImageView at position: " + position);
+        		return null;
+        	}
         }
         if (position < that.imgCache.images.size() && (that.imgCache.images.get(position).isComplete() || that.imgCache.images.get(position).isFailed())) {
         	
