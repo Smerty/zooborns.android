@@ -24,89 +24,89 @@ import android.util.Log;
 
 public class FeedFetcher {
 
-	private Document rssDoc;
-	
-	private String etag;
-	
-	public FeedFetcher() {
-		super();
-	}
+    private Document rssDoc;
 
-	public Document getDoc() {
-		return rssDoc;
-	}
+    private String etag;
 
-	public String getEtag() {
-		return etag;
-	}
-	
-	public UpdateStatus pull(String etag) throws Exception {
+    public FeedFetcher() {
+        super();
+    }
+
+    public Document getDoc() {
+        return rssDoc;
+    }
+
+    public String getEtag() {
+        return etag;
+    }
+
+    public UpdateStatus pull(String etag) throws Exception {
 
 
-		HttpParams params = new BasicHttpParams();
-		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-		HttpProtocolParams.setContentCharset(params, "UTF-8");
-		HttpProtocolParams.setUseExpectContinue(params, true);
-		HttpProtocolParams.setHttpElementCharset(params, "UTF-8");
+        HttpParams params = new BasicHttpParams();
+        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+        HttpProtocolParams.setContentCharset(params, "UTF-8");
+        HttpProtocolParams.setUseExpectContinue(params, true);
+        HttpProtocolParams.setHttpElementCharset(params, "UTF-8");
 
-		String agent = "ZooBorns ";
-		
+        String agent = "ZooBorns ";
 
-		agent += "for android";
 
-		HttpProtocolParams.setUserAgent(params, agent);
+        agent += "for android";
 
-		DefaultHttpClient client = new DefaultHttpClient(params);
-		
-		InputStream dataInput = null;
+        HttpProtocolParams.setUserAgent(params, agent);
 
-		HttpGet method = new HttpGet(
-				"http://feeds.feedburner.com/Zooborns");
-		if (etag != null) {
-			method.addHeader("If-None-Match", etag);
-		}
-		HttpResponse res = client.execute(method);
-		
-		Map<String, String> responseHeaderMap = new HashMap<String, String>();
-		
-		for (Header h : res.getAllHeaders()) {
-			Log.d("FeedFetcher", h.getName() + ": " + h.getValue());
-			responseHeaderMap.put(h.getName(), h.getValue());
-		}
-		
-		if (res.getStatusLine().getStatusCode() == 304) {
-			// feed not modified
-			return UpdateStatus.NOT_MODIFIED;
-		}
-		else {
-			if (responseHeaderMap.containsKey("ETag"))
-			this.etag = responseHeaderMap.get("ETag");
-		}
-		
-		dataInput = res.getEntity().getContent();
-		
+        DefaultHttpClient client = new DefaultHttpClient(params);
 
-		rssDoc = null;
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db;
+        InputStream dataInput = null;
 
-		try {
-			db = dbf.newDocumentBuilder();
-			rssDoc = db.parse(dataInput);
-			dataInput.close();
-			
-			rssDoc.getDocumentElement().normalize();
-		} catch (SAXParseException e) {
-			e.printStackTrace();
-			throw new FeedParseException();
-		} catch (SAXException e) {
-			e.printStackTrace();
-			throw new FeedParseException();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			throw new FeedParseException();
-		}
-		return UpdateStatus.COMPLETE;
-	}
+        HttpGet method = new HttpGet(
+                "http://feeds.feedburner.com/Zooborns");
+        if (etag != null) {
+            method.addHeader("If-None-Match", etag);
+        }
+        HttpResponse res = client.execute(method);
+
+        Map<String, String> responseHeaderMap = new HashMap<String, String>();
+
+        for (Header h : res.getAllHeaders()) {
+            Log.d("FeedFetcher", h.getName() + ": " + h.getValue());
+            responseHeaderMap.put(h.getName(), h.getValue());
+        }
+
+        if (res.getStatusLine().getStatusCode() == 304) {
+            // feed not modified
+            return UpdateStatus.NOT_MODIFIED;
+        }
+        else {
+            if (responseHeaderMap.containsKey("ETag"))
+            this.etag = responseHeaderMap.get("ETag");
+        }
+
+        dataInput = res.getEntity().getContent();
+
+
+        rssDoc = null;
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db;
+
+        try {
+            db = dbf.newDocumentBuilder();
+            rssDoc = db.parse(dataInput);
+            dataInput.close();
+
+            rssDoc.getDocumentElement().normalize();
+        } catch (SAXParseException e) {
+            e.printStackTrace();
+            throw new FeedParseException();
+        } catch (SAXException e) {
+            e.printStackTrace();
+            throw new FeedParseException();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+            throw new FeedParseException();
+        }
+        return UpdateStatus.COMPLETE;
+    }
 }
 

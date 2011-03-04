@@ -16,119 +16,119 @@ import android.util.Log;
 
 public class ZooBornsGallery implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	private String etag;
-	
-	public ArrayList<ZooBornsEntry> entries;
+    private static final long serialVersionUID = 1L;
 
-	public ZooBornsGallery() {
-		super();
-		entries = new ArrayList<ZooBornsEntry>();
-	}
-	
-	public String getEtag() {
-		return etag;
-	}
+    private String etag;
 
-	public boolean update(String etag) throws Exception {
+    public ArrayList<ZooBornsEntry> entries;
 
-		FeedFetcher fFetcher = new FeedFetcher();
-		
-		if (fFetcher.pull(etag) == UpdateStatus.NOT_MODIFIED) {
-			return true;
-		}
-		else {
-			//update etag
-			this.etag = fFetcher.getEtag();
-		}
-		
-		Document doc = fFetcher.getDoc();
+    public ZooBornsGallery() {
+        super();
+        entries = new ArrayList<ZooBornsEntry>();
+    }
 
-		if (doc == null) {
-			Log.d("update", "doc was null");
-			return false;
-		}
+    public String getEtag() {
+        return etag;
+    }
 
-		NodeList itemNodes = doc.getElementsByTagName("entry");
+    public boolean update(String etag) throws Exception {
 
-		for (int i = 0; i < itemNodes.getLength(); i++) {
-			Node itemNode = itemNodes.item(i);
+        FeedFetcher fFetcher = new FeedFetcher();
 
-			if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
+        if (fFetcher.pull(etag) == UpdateStatus.NOT_MODIFIED) {
+            return true;
+        }
+        else {
+            //update etag
+            this.etag = fFetcher.getEtag();
+        }
 
-				Element fstElmnt = (Element) itemNode;
+        Document doc = fFetcher.getDoc();
 
-				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("title");
-				Element fstNmElmnt = (Element) fstNmElmntLst.item(0);
-				NodeList fstNm = fstNmElmnt.getChildNodes();
+        if (doc == null) {
+            Log.d("update", "doc was null");
+            return false;
+        }
 
-				String title = ((Node) fstNm.item(0)).getNodeValue();
-				
-				fstNmElmntLst = fstElmnt.getElementsByTagName("feedburner:origLink");
-				fstNmElmnt = (Element) fstNmElmntLst.item(0);
-				fstNm = fstNmElmnt.getChildNodes();
+        NodeList itemNodes = doc.getElementsByTagName("entry");
 
-				String entryUrl = ((Node) fstNm.item(0)).getNodeValue();
-				
-				fstNmElmntLst = fstElmnt.getElementsByTagName("content");
-				fstNmElmnt = (Element) fstNmElmntLst.item(0);
-				fstNm = fstNmElmnt.getChildNodes();
+        for (int i = 0; i < itemNodes.getLength(); i++) {
+            Node itemNode = itemNodes.item(i);
 
-				String entryContent = ((Node) fstNm.item(0)).getNodeValue();
+            if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
 
-				if (title != null && title.length() > 0) {
-					Log.d("ZooBornsGallery", "Entry Title : " + title);
+                Element fstElmnt = (Element) itemNode;
 
-					ZooBornsEntry zE = new ZooBornsEntry(entryUrl, title, entryContent);
+                NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("title");
+                Element fstNmElmnt = (Element) fstNmElmntLst.item(0);
+                NodeList fstNm = fstNmElmnt.getChildNodes();
 
-					NodeList contentNodes = fstElmnt
-							.getElementsByTagName("content");
+                String title = (fstNm.item(0)).getNodeValue();
 
-					Log.d("ZooBornsGallery", "content tag count : "
-							+ contentNodes.getLength());
+                fstNmElmntLst = fstElmnt.getElementsByTagName("feedburner:origLink");
+                fstNmElmnt = (Element) fstNmElmntLst.item(0);
+                fstNm = fstNmElmnt.getChildNodes();
 
-					if (contentNodes.getLength() == 1) {
-						String entryBody = contentNodes.item(0).getChildNodes()
-								.item(0).getNodeValue();
+                String entryUrl = (fstNm.item(0)).getNodeValue();
 
-						Pattern pat = null;
-						Matcher match = null;
-						String url = null;
+                fstNmElmntLst = fstElmnt.getElementsByTagName("content");
+                fstNmElmnt = (Element) fstNmElmntLst.item(0);
+                fstNm = fstNmElmnt.getChildNodes();
 
-						pat = Pattern.compile("<img[^>]*src=\"([^\"]*)",
-								Pattern.CASE_INSENSITIVE);
-						match = pat.matcher(entryBody);
-						while (match.find()) {
-							url = match.group(1);
-							if (!url.contains("http://feeds.feedburner.com")) {
-								zE.addPhoto(new ZooBornsPhoto(url));
-							}
-						}
+                String entryContent = (fstNm.item(0)).getNodeValue();
 
-					}
+                if (title != null && title.length() > 0) {
+                    Log.d("ZooBornsGallery", "Entry Title : " + title);
 
-					if (zE.photos.size() > 0) {
-						addEntry(zE);
-					}
-				}
+                    ZooBornsEntry zE = new ZooBornsEntry(entryUrl, title, entryContent);
 
-			}
-		}
+                    NodeList contentNodes = fstElmnt
+                            .getElementsByTagName("content");
 
-		return true;
-	}
+                    Log.d("ZooBornsGallery", "content tag count : "
+                            + contentNodes.getLength());
 
-	public boolean addEntry(ZooBornsEntry entry) {
-		return entries.add(entry);
-	}
-	
-	public ArrayList<ZooBornsEntry> getEntries() {
-		return entries;
-	}
-	
-	public ZooBornsEntry get(int index) {
-		return entries.get(index);
-	}
+                    if (contentNodes.getLength() == 1) {
+                        String entryBody = contentNodes.item(0).getChildNodes()
+                                .item(0).getNodeValue();
+
+                        Pattern pat = null;
+                        Matcher match = null;
+                        String url = null;
+
+                        pat = Pattern.compile("<img[^>]*src=\"([^\"]*)",
+                                Pattern.CASE_INSENSITIVE);
+                        match = pat.matcher(entryBody);
+                        while (match.find()) {
+                            url = match.group(1);
+                            if (!url.contains("http://feeds.feedburner.com")) {
+                                zE.addPhoto(new ZooBornsPhoto(url));
+                            }
+                        }
+
+                    }
+
+                    if (zE.photos.size() > 0) {
+                        addEntry(zE);
+                    }
+                }
+
+            }
+        }
+
+        return true;
+    }
+
+    public boolean addEntry(ZooBornsEntry entry) {
+        return entries.add(entry);
+    }
+
+    public ArrayList<ZooBornsEntry> getEntries() {
+        return entries;
+    }
+
+    public ZooBornsEntry get(int index) {
+        return entries.get(index);
+    }
 
 }

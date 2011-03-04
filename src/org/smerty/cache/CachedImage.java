@@ -20,210 +20,224 @@ import android.util.Log;
 
 public class CachedImage implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String url;
-	private File imagefile;
-	private boolean complete;
-	private boolean failed;
-	private int retries;
-	private boolean inProgress;
-	transient private Bitmap bitmapIcon;
-	
-	@SuppressWarnings("unused")
-	private CachedImage() {
-		
-	}
+    private String url;
+    private File imagefile;
+    private boolean complete;
+    private boolean failed;
+    private int retries;
+    private boolean inProgress;
+    transient private Bitmap bitmapIcon;
 
-	public CachedImage(String url, File rootDir) {
-		super();
-		this.url = url;
-		this.imagefile = new File(rootDir, this.getCacheFilename());
-		this.complete = false;
-		this.failed = false;
-		this.retries = 0;
-		this.inProgress = false;
-	}
+    @SuppressWarnings("unused")
+    private CachedImage() {
 
-	public String getUrl() {
-		return url;
-	}
+    }
 
-	public File getFilename() {
-		return this.imagefile;
-	}
+    public CachedImage(String url, File rootDir) {
+        super();
+        this.url = url;
+        this.imagefile = new File(rootDir, this.getCacheFilename());
+        this.complete = false;
+        this.failed = false;
+        this.retries = 0;
+        this.inProgress = false;
+    }
 
-	public boolean isComplete() {
-		return complete;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public File getFilename() {
+        return this.imagefile;
+    }
 
-	public void setFilename(File imagefile) {
-		this.imagefile = imagefile;
-	}
+    public boolean isComplete() {
+        return complete;
+    }
 
-	public void setComplete(boolean complete) {
-		this.complete = complete;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	public boolean isFailed() {
-		return failed;
-	}
+    public void setFilename(File imagefile) {
+        this.imagefile = imagefile;
+    }
 
-	public int getRetries() {
-		return retries;
-	}
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
 
-	public void setFailed(boolean failed) {
-		this.failed = failed;
-	}
+    public boolean isFailed() {
+        return failed;
+    }
 
-	public void setRetries(int retries) {
-		this.retries = retries;
-	}
+    public int getRetries() {
+        return retries;
+    }
 
-	public boolean isInProgress() {
-		return inProgress;
-	}
+    public void setFailed(boolean failed) {
+        this.failed = failed;
+    }
 
-	public void setInProgress(boolean inProgress) {
-		this.inProgress = inProgress;
-	}
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
 
-	public Bitmap getBitmapIcon() {
-		return bitmapIcon;
-	}
+    public boolean isInProgress() {
+        return inProgress;
+    }
 
-	public void setBitmapIcon(Bitmap bitmapIcon) {
-		this.bitmapIcon = bitmapIcon;
-	}
+    public void setInProgress(boolean inProgress) {
+        this.inProgress = inProgress;
+    }
 
-	public InputStream get() {
-		InputStream in = null;
-		return in;
-	}
+    public Bitmap getBitmapIcon() {
+        return bitmapIcon;
+    }
 
-	public boolean delete() {
-		return this.getImageFile().delete();
-	}
+    public void setBitmapIcon(Bitmap bitmapIcon) {
+        this.bitmapIcon = bitmapIcon;
+    }
 
-	public String filesystemUri() {
-		return "file://" + this.getImageFile().getAbsolutePath();
-	}
+    public InputStream get() {
+        InputStream in = null;
+        return in;
+    }
 
-	public File getImageFile() {
-		return this.imagefile;
-	}
+    public boolean delete() {
+        return this.getImageFile().delete();
+    }
 
-	public String getCacheFilename() {
+    public String filesystemUri() {
+        return "file://" + this.getImageFile().getAbsolutePath();
+    }
 
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			return null;
-		}
+    public File getImageFile() {
+        return this.imagefile;
+    }
 
-		byte[] urlBytes = this.getUrl().getBytes();
-		md.update(urlBytes, 0, urlBytes.length);
-		BigInteger hashed = new BigInteger(1, md.digest());
+    public String getCacheFilename() {
 
-		return String.format("%1$032X", hashed) + ".jpg";
-	}
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+            return null;
+        }
 
-	public boolean imageFileExists() {
-		boolean retval = false;
-		if (this.getImageFile() != null) {
-			retval = this.getImageFile().exists();
-		}
-		return retval;
-	}
+        byte[] urlBytes = this.getUrl().getBytes();
+        md.update(urlBytes, 0, urlBytes.length);
+        BigInteger hashed = new BigInteger(1, md.digest());
 
-	public boolean thumbnail(int size) {
-		Drawable image;
-		try {
-			image = Drawable.createFromStream(new FileInputStream(this.getImageFile()), "src");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
+        return String.format("%1$032X", hashed) + ".jpg";
+    }
 
-		if (image == null) {
-			return false;
-		}
+    public boolean imageFileExists() {
+        boolean retval = false;
+        if (this.getImageFile() != null) {
+            retval = this.getImageFile().exists();
+        }
+        return retval;
+    }
 
-		Bitmap bitmapOrg = ((BitmapDrawable) image).getBitmap();
+    public boolean thumbnail(int size) {
+        Drawable image;
+        try {
+            image = Drawable.createFromStream(
+                    new FileInputStream(this.getImageFile()), "src");
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
 
-		if (bitmapOrg == null) {
-			// failed
-			return false;
-		} else {
-			int width = bitmapOrg.getWidth();
-			int height = bitmapOrg.getHeight();
+        if (image == null) {
+            return false;
+        }
 
-			int newWidth = size;
-			int newHeight = size;
+        Bitmap bitmapOrg = ((BitmapDrawable) image).getBitmap();
 
-			int offsetX = 0;
-			int offsetY = 0;
+        if (bitmapOrg == null) {
+            // failed
+            return false;
+        } else {
+            int width = bitmapOrg.getWidth();
+            int height = bitmapOrg.getHeight();
 
-			if (width > height) {
-				offsetX = (width - height) / 2;
-			} else if (height > width) {
-				offsetY = (height - width) / 2;
-			} else {
-				// do nothing
-			}
+            int newWidth = size;
+            int newHeight = size;
 
-			float scaleWidth = ((float) newWidth) / (width - (offsetX * 2));
-			float scaleHeight = ((float) newHeight) / (height - (offsetY * 2));
+            int offsetX = 0;
+            int offsetY = 0;
 
-			Matrix matrix = new Matrix();
-			matrix.postScale(scaleWidth, scaleHeight);
+            if (width > height) {
+                offsetX = (width - height) / 2;
+            } else if (height > width) {
+                offsetY = (height - width) / 2;
+            } else {
+                // do nothing
+            }
 
-			this.bitmapIcon = Bitmap
-					.createBitmap(bitmapOrg, offsetX, offsetY, width
-							- (offsetX * 2), height - (offsetY * 2), matrix,
-							true);
-		}
-		return true;
-	}
+            float scaleWidth = ((float) newWidth) / (width - (offsetX * 2));
+            float scaleHeight = ((float) newHeight) / (height - (offsetY * 2));
 
-	public boolean download() {
+            Matrix matrix = new Matrix();
+            matrix.postScale(scaleWidth, scaleHeight);
 
-		if (this.getUrl() != null && this.getUrl().length() > 0) {
-			File imgfile = this.getImageFile();
-			Log.d("download", "cache full path: " + imgfile.getAbsolutePath());
-			try {
-				URL iconURL = null;
-				iconURL = new URL(this.getUrl());
-				Log.d("download", "Fetching: " + iconURL.toString());
-				FileOutputStream imgout = new FileOutputStream(imgfile);
-				InputStream ism = iconURL.openStream();
+            this.bitmapIcon = Bitmap
+                    .createBitmap(bitmapOrg, offsetX, offsetY, width
+                            - (offsetX * 2), height - (offsetY * 2), matrix,
+                            true);
+        }
+        return true;
+    }
 
-				byte[] buffer = new byte[1024];
-				int bytesRead;
+    public boolean download() {
 
-				while ((bytesRead = ism.read(buffer, 0, 1024)) >= 0) {
-					imgout.write(buffer, 0, bytesRead);
-				}
+        long startTime = System.currentTimeMillis();
 
-				imgout.close();
-				ism.close();
+        if (this.getUrl() != null && this.getUrl().length() > 0) {
+            File imgfile = this.getImageFile();
+            Log.d("download", "cache full path: " + imgfile.getAbsolutePath());
+            try {
+                URL iconURL = null;
+                iconURL = new URL(this.getUrl());
+                Log.d("download", "Fetching: " + iconURL.toString());
 
-				return true;
-			} catch (IOException e) {
-				Log.e("download", "Could not write file " + e.getMessage());
-				return false;
-			}
-		}
-		return false;
-	}
+                FileOutputStream imgout = new FileOutputStream(imgfile);
+                InputStream ism = iconURL.openStream();
+
+                byte[] buffer = new byte[2048];
+                int bytesRead;
+
+                int totalBytes = 0;
+
+                while ((bytesRead = ism.read(buffer, 0, 512)) >= 0) {
+                    imgout.write(buffer, 0, bytesRead);
+                    totalBytes += bytesRead;
+                }
+
+                imgout.close();
+                ism.close();
+
+                double totTime = (double) (System.currentTimeMillis() - startTime)
+                        / (double) 1000;
+                Log.d("DL perf", totalBytes + " bytes in " + totTime
+                        + " seconds ("
+                        + ((totalBytes * 1.0) / (startTime))
+                        + ")");
+
+                return true;
+            } catch (IOException e) {
+                Log.e("download", "Could not write file " + e.getMessage());
+                return false;
+            }
+        }
+        return false;
+    }
 
 }

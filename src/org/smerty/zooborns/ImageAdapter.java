@@ -10,9 +10,9 @@ import android.widget.ImageView;
 
 public class ImageAdapter extends BaseAdapter {
     private ZooBorns that;
-    
+
     public ImageAdapter(ZooBorns c) {
-    	that = c;
+        that = c;
     }
 
     public int getCount() {
@@ -28,8 +28,8 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-    	//Log.d("ImageAdapter", "getView()");
-    	
+        //Log.d("ImageAdapter", "getView()");
+
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(that);
@@ -37,34 +37,34 @@ public class ImageAdapter extends BaseAdapter {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(1, 1, 1, 1);
         } else {
-        	if (convertView instanceof ImageView) {
-        		imageView = (ImageView) convertView;
-        	}
-        	else {
-        		Log.d("ImageAdapter:getView", "View was not an ImageView at position: " + position);
-        		return null;
-        	}
+            if (convertView instanceof ImageView) {
+                imageView = (ImageView) convertView;
+            }
+            else {
+                Log.d("ImageAdapter:getView", "View was not an ImageView at position: " + position);
+                return null;
+            }
         }
         if (position < that.imgCache.images.size() && (that.imgCache.images.get(position).isComplete() || that.imgCache.images.get(position).isFailed())) {
-        	
-        	try {
-        		if (that.imgCache.images.get(position).getBitmapIcon() != null) {
-         		imageView.setImageBitmap(that.imgCache.images.get(position).getBitmapIcon());
-        		
-        		}
-        		else {
-        			imageView.setImageDrawable(that.getResources().getDrawable(R.drawable.ic_menu_delete));
-        		}
-			} 
-        	finally {
-        		//do nothing
-        	}
+
+            try {
+                if (that.imgCache.images.get(position).getBitmapIcon() != null) {
+                 imageView.setImageBitmap(that.imgCache.images.get(position).getBitmapIcon());
+
+                }
+                else {
+                    imageView.setImageDrawable(that.getResources().getDrawable(R.drawable.ic_menu_delete));
+                }
+            }
+            finally {
+                //do nothing
+            }
         }
         else {
-        	imageView.setImageDrawable(that.getResources().getDrawable(R.drawable.ic_menu_help));
+            imageView.setImageDrawable(that.getResources().getDrawable(R.drawable.ic_menu_help));
         }
         return imageView;
     }
 
-  
+
 }
