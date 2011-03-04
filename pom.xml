@@ -95,6 +95,7 @@
 	  </plugins>
 	</reporting>
 
+    <description>ZooBorns photo browser for Android platform.</description>
     <scm>
         <connection>scm:git:git://github.com/ppicazo/zooborns.android.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/ppicazo/zooborns.android.git</developerConnection>
