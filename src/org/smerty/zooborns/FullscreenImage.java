@@ -82,7 +82,7 @@ public class FullscreenImage extends Activity {
 
     for (ZooBornsEntry entry : gallery.getEntries()) {
       for (ZooBornsPhoto photo : entry.getPhotos()) {
-        if (photo.url.equals(cachedImage.getUrl())) {
+        if (photo.getUrl().equals(cachedImage.getUrl())) {
           return entry;
         }
       }

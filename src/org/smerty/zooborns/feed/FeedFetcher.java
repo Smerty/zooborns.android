@@ -24,6 +24,8 @@ import android.util.Log;
 
 public class FeedFetcher {
 
+  private static final int NOT_MODIFIED_HTTP_CODE = 304;
+
   private Document rssDoc;
 
   private String etag;
@@ -32,15 +34,15 @@ public class FeedFetcher {
     super();
   }
 
-  public Document getDoc() {
+  public final Document getDoc() {
     return rssDoc;
   }
 
-  public String getEtag() {
+  public final String getEtag() {
     return etag;
   }
 
-  public UpdateStatus pull(String etag) throws Exception {
+  public final UpdateStatus pull(final String etagIn) throws Exception {
 
     HttpParams params = new BasicHttpParams();
     HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
@@ -59,8 +61,8 @@ public class FeedFetcher {
     InputStream dataInput = null;
 
     HttpGet method = new HttpGet("http://feeds.feedburner.com/Zooborns");
-    if (etag != null) {
-      method.addHeader("If-None-Match", etag);
+    if (etagIn != null) {
+      method.addHeader("If-None-Match", etagIn);
     }
     HttpResponse res = client.execute(method);
 
@@ -71,12 +73,13 @@ public class FeedFetcher {
       responseHeaderMap.put(h.getName(), h.getValue());
     }
 
-    if (res.getStatusLine().getStatusCode() == 304) {
+    if (res.getStatusLine().getStatusCode() == NOT_MODIFIED_HTTP_CODE) {
       // feed not modified
       return UpdateStatus.NOT_MODIFIED;
     } else {
-      if (responseHeaderMap.containsKey("ETag"))
+      if (responseHeaderMap.containsKey("ETag")) {
         this.etag = responseHeaderMap.get("ETag");
+      }
     }
 
     dataInput = res.getEntity().getContent();
