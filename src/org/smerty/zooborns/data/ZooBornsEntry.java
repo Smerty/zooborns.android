@@ -13,7 +13,8 @@ public class ZooBornsEntry implements Serializable {
 
   private ArrayList<ZooBornsPhoto> photos;
 
-  public ZooBornsEntry(final String urlIn, final String titleIn, final String bodyIn) {
+  public ZooBornsEntry(final String urlIn, final String titleIn,
+      final String bodyIn) {
     super();
     this.url = urlIn;
     this.title = titleIn;

@@ -50,8 +50,8 @@ public class ImageAdapter extends BaseAdapter {
       }
     }
     if (position < that.imgCache.getImages().size()
-        && (that.imgCache.getImages().get(position).isComplete() || that.imgCache.getImages()
-            .get(position).isFailed())) {
+        && (that.imgCache.getImages().get(position).isComplete() || that.imgCache
+            .getImages().get(position).isFailed())) {
 
       try {
         if (that.imgCache.getImages().get(position).getBitmapIcon() != null) {
