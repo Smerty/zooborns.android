@@ -6,50 +6,50 @@ public class ZooBornsPhoto implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  public String url;
-  public String title;
-  public String alt;
+  private String url;
+  private String title;
+  private String alt;
 
-  public ZooBornsPhoto(String url) {
+  public ZooBornsPhoto(final String urlIn) {
     super();
-    this.url = url;
+    this.url = urlIn;
   }
 
-  public ZooBornsPhoto(String url, String title) {
+  public ZooBornsPhoto(final String urlIn, final String titleIn) {
     super();
-    this.url = url;
-    this.title = title;
+    this.url = urlIn;
+    this.title = titleIn;
   }
 
-  public ZooBornsPhoto(String url, String title, String alt) {
+  public ZooBornsPhoto(final String urlIn, final String titleIn, final String altIn) {
     super();
-    this.url = url;
-    this.title = title;
-    this.alt = alt;
+    this.url = urlIn;
+    this.title = titleIn;
+    this.alt = altIn;
   }
 
-  public String getUrl() {
+  public final String getUrl() {
     return url;
   }
 
-  public void setUrl(String url) {
-    this.url = url;
+  public final void setUrl(final String urlIn) {
+    this.url = urlIn;
   }
 
-  public String getTitle() {
+  public final String getTitle() {
     return title;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
+  public final void setTitle(final String titleIn) {
+    this.title = titleIn;
   }
 
-  public String getAlt() {
+  public final String getAlt() {
     return alt;
   }
 
-  public void setAlt(String alt) {
-    this.alt = alt;
+  public final void setAlt(final String altIn) {
+    this.alt = altIn;
   }
 
 }

@@ -20,22 +20,22 @@ public class ZooBornsGallery implements Serializable {
 
   private String etag;
 
-  public ArrayList<ZooBornsEntry> entries;
+  private ArrayList<ZooBornsEntry> entries;
 
   public ZooBornsGallery() {
     super();
     entries = new ArrayList<ZooBornsEntry>();
   }
 
-  public String getEtag() {
+  public final String getEtag() {
     return etag;
   }
 
-  public boolean update(String etag) throws Exception {
+  public final boolean update(final String etagIn) throws Exception {
 
     FeedFetcher fFetcher = new FeedFetcher();
 
-    if (fFetcher.pull(etag) == UpdateStatus.NOT_MODIFIED) {
+    if (fFetcher.pull(etagIn) == UpdateStatus.NOT_MODIFIED) {
       return true;
     } else {
       // update etag
@@ -106,7 +106,7 @@ public class ZooBornsGallery implements Serializable {
 
           }
 
-          if (zE.photos.size() > 0) {
+          if (zE.getPhotos().size() > 0) {
             addEntry(zE);
           }
         }
@@ -117,15 +117,15 @@ public class ZooBornsGallery implements Serializable {
     return true;
   }
 
-  public boolean addEntry(ZooBornsEntry entry) {
+  public final boolean addEntry(final ZooBornsEntry entry) {
     return entries.add(entry);
   }
 
-  public ArrayList<ZooBornsEntry> getEntries() {
+  public final ArrayList<ZooBornsEntry> getEntries() {
     return entries;
   }
 
-  public ZooBornsEntry get(int index) {
+  public final ZooBornsEntry get(final int index) {
     return entries.get(index);
   }
 
