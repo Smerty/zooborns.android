@@ -7,60 +7,61 @@ public class ZooBornsEntry implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  public String url;
-  public String title;
-  public String body;
+  private String url;
+  private String title;
+  private String body;
 
-  public ArrayList<ZooBornsPhoto> photos;
+  private ArrayList<ZooBornsPhoto> photos;
 
-  public ZooBornsEntry(String url, String title, String body) {
+  public ZooBornsEntry(final String urlIn, final String titleIn, final String bodyIn) {
     super();
-    this.url = url;
-    this.title = title;
-    this.body = body;
+    this.url = urlIn;
+    this.title = titleIn;
+    this.body = bodyIn;
 
     this.photos = new ArrayList<ZooBornsPhoto>();
   }
 
-  public String getUrl() {
+  public final String getUrl() {
     return url;
   }
 
-  public void setUrl(String url) {
-    this.url = url;
+  public final void setUrl(final String urlIn) {
+    this.url = urlIn;
   }
 
-  public String getTitle() {
+  public final String getTitle() {
     return title;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
+  public final void setTitle(final String titleIn) {
+    this.title = titleIn;
   }
 
-  public String getBody() {
+  public final String getBody() {
     return body.replaceAll("<(.*?)*>", "").trim();
   }
 
-  public String getBodyRaw() {
+  public final String getBodyRaw() {
     return body;
   }
 
-  public void setBody(String body) {
-    this.body = body;
+  public final void setBody(final String bodyIn) {
+    this.body = bodyIn;
   }
 
-  public ArrayList<ZooBornsPhoto> getPhotos() {
+  public final ArrayList<ZooBornsPhoto> getPhotos() {
     return photos;
   }
 
-  public void setPhotos(ArrayList<ZooBornsPhoto> photos) {
-    this.photos = photos;
+  public final void setPhotos(final ArrayList<ZooBornsPhoto> photosIn) {
+    this.photos = photosIn;
   }
 
-  public void addPhoto(ZooBornsPhoto photo) {
-    if (photo != null)
+  public final void addPhoto(ZooBornsPhoto photo) {
+    if (photo != null) {
       photos.add(photo);
+    }
   }
 
 }

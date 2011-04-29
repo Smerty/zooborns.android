@@ -234,7 +234,7 @@ public class ZooBorns extends Activity {
         that.imgCache = new ImageCache(that);
       }
 
-      for (ZooBornsEntry entry : that.zGallery.entries) {
+      for (ZooBornsEntry entry : that.zGallery.getEntries()) {
         for (ZooBornsPhoto photo : entry.getPhotos()) {
           that.imgCache.add(photo.getUrl());
         }
