@@ -50,8 +50,9 @@ public class FullscreenImage extends Activity {
         float velocityY) {
 
       try {
-        if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+        if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH) {
           return false;
+        }
         if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
             && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
           if (position < cachedImageList.size() - 1) {
@@ -66,7 +67,8 @@ public class FullscreenImage extends Activity {
           }
         }
       } catch (Exception e) {
-        // nothing
+        Log.d("onFling", "ignoring caught exception: "
+            + e.getClass().getCanonicalName() + " " + e.getMessage());
       }
       return false;
     }

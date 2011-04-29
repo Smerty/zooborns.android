@@ -14,8 +14,8 @@ import android.util.Log;
 public class ImageCache {
 
   private ZooBorns mContext;
-  public ArrayList<CachedImage> images;
-  public File rootDir;
+  private ArrayList<CachedImage> images;
+  private File rootDir;
   private AsyncTask<Integer, Integer, ImageCache> task;
 
   public ImageCache(ZooBorns c) {
@@ -108,8 +108,10 @@ public class ImageCache {
   private class DownloadFilesTask extends
       AsyncTask<Integer, Integer, ImageCache> {
 
-    ZooBorns that;
-    ImageCache imgCache;
+    private static final int COMPLETE_PERCENT = 100;
+
+    private ZooBorns that;
+    private ImageCache imgCache;
 
     @Override
     protected void onPreExecute() {
@@ -172,11 +174,11 @@ public class ImageCache {
               ((BitmapDrawable) that.getResources().getDrawable(
                   android.R.drawable.ic_menu_close_clear_cancel)).getBitmap());
         }
-        publishProgress((int) ((doneCount++ / (float) imgCache.images.size()) * 100));
+        publishProgress((int) ((doneCount++ / (float) imgCache.images.size()) * COMPLETE_PERCENT));
 
       }
 
-      publishProgress(100);
+      publishProgress(COMPLETE_PERCENT);
 
       return imgCache;
     }

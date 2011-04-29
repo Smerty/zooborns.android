@@ -42,11 +42,19 @@ import android.widget.GridView;
 
 public class ZooBorns extends Activity {
 
+  private static final int TINY_WIDTH = 48;
+
+  private static final int SMALL_WIDTH = 64;
+
+  private static final int MEDIUM_WIDTH = 96;
+
+  private static final int LARGE_WIDTH = 128;
+
   public ImageCache imgCache;
   public GridView gridview;
   public ImageAdapter imgAdapter;
   public ZooBornsGallery zGallery;
-  public int columnWidth = 128;
+  public int columnWidth = LARGE_WIDTH;
   private AsyncTask<ZooBorns, Integer, Integer> updatetask;
 
   public ProgressDialog progressDialog;
@@ -69,15 +77,15 @@ public class ZooBorns extends Activity {
       int displayWidth = display.getWidth();
 
       if (displayWidth / columnWidth < 2) {
-        columnWidth = 96;
+        columnWidth = MEDIUM_WIDTH;
       }
 
       if (displayWidth / columnWidth < 2) {
-        columnWidth = 64;
+        columnWidth = SMALL_WIDTH;
       }
 
       if (displayWidth / columnWidth < 2) {
-        columnWidth = 48;
+        columnWidth = TINY_WIDTH;
       }
 
       Log.d("setColumnWidth", "width: " + columnWidth);
@@ -90,25 +98,25 @@ public class ZooBorns extends Activity {
           // TODO Auto-generated method stub
           int position = arg2;
 
-          if (position >= that.imgCache.images.size()) {
+          if (position >= that.imgCache.getImages().size()) {
             Log.d("onClick", "Position: " + position + " is out of range ("
-                + that.imgCache.images.size() + ")");
+                + that.imgCache.getImages().size() + ")");
             return;
           } else {
             Log.d("onClick", "Position: " + position + " is in range ("
-                + that.imgCache.images.size() + ")");
+                + that.imgCache.getImages().size() + ")");
           }
 
-          if (that.imgCache.images.get(position).isFailed()) {
+          if (that.imgCache.getImages().get(position).isFailed()) {
             Log.d("onClick",
                 "clicked on a failed download, starting downloader...");
             that.imgCache.startDownloading();
-          } else if (that.imgCache.images.get(position).isComplete()) {
+          } else if (that.imgCache.getImages().get(position).isComplete()) {
             Log.d("onClick",
                 "launching url: "
-                    + that.imgCache.images.get(position).filesystemUri());
+                    + that.imgCache.getImages().get(position).filesystemUri());
             Intent i = new Intent(that, FullscreenImage.class);
-            i.setData(Uri.parse(that.imgCache.images.get(position)
+            i.setData(Uri.parse(that.imgCache.getImages().get(position)
                 .filesystemUri()));
             i.putExtra("currentImageIndex", position);
             ArrayList<CachedImage> cachedImageList = that.imgCache.getImages();
@@ -159,7 +167,7 @@ public class ZooBorns extends Activity {
 
   private class UpdateFeedTask extends AsyncTask<ZooBorns, Integer, Integer> {
 
-    ZooBorns that;
+    private ZooBorns that;
 
     protected Integer doInBackground(ZooBorns... thats) {
 
@@ -226,8 +234,6 @@ public class ZooBorns extends Activity {
       } catch (Exception e) {
         e.printStackTrace();
         return 0;
-      } finally {
-        // clean up code here
       }
 
       if (that.imgCache == null) {
