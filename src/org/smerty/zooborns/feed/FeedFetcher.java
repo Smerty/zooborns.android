@@ -24,89 +24,83 @@ import android.util.Log;
 
 public class FeedFetcher {
 
-    private Document rssDoc;
+  private Document rssDoc;
 
-    private String etag;
+  private String etag;
 
-    public FeedFetcher() {
-        super();
+  public FeedFetcher() {
+    super();
+  }
+
+  public Document getDoc() {
+    return rssDoc;
+  }
+
+  public String getEtag() {
+    return etag;
+  }
+
+  public UpdateStatus pull(String etag) throws Exception {
+
+    HttpParams params = new BasicHttpParams();
+    HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+    HttpProtocolParams.setContentCharset(params, "UTF-8");
+    HttpProtocolParams.setUseExpectContinue(params, true);
+    HttpProtocolParams.setHttpElementCharset(params, "UTF-8");
+
+    String agent = "ZooBorns ";
+
+    agent += "for android";
+
+    HttpProtocolParams.setUserAgent(params, agent);
+
+    DefaultHttpClient client = new DefaultHttpClient(params);
+
+    InputStream dataInput = null;
+
+    HttpGet method = new HttpGet("http://feeds.feedburner.com/Zooborns");
+    if (etag != null) {
+      method.addHeader("If-None-Match", etag);
+    }
+    HttpResponse res = client.execute(method);
+
+    Map<String, String> responseHeaderMap = new HashMap<String, String>();
+
+    for (Header h : res.getAllHeaders()) {
+      Log.d("FeedFetcher", h.getName() + ": " + h.getValue());
+      responseHeaderMap.put(h.getName(), h.getValue());
     }
 
-    public Document getDoc() {
-        return rssDoc;
+    if (res.getStatusLine().getStatusCode() == 304) {
+      // feed not modified
+      return UpdateStatus.NOT_MODIFIED;
+    } else {
+      if (responseHeaderMap.containsKey("ETag"))
+        this.etag = responseHeaderMap.get("ETag");
     }
 
-    public String getEtag() {
-        return etag;
+    dataInput = res.getEntity().getContent();
+
+    rssDoc = null;
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilder db;
+
+    try {
+      db = dbf.newDocumentBuilder();
+      rssDoc = db.parse(dataInput);
+      dataInput.close();
+
+      rssDoc.getDocumentElement().normalize();
+    } catch (SAXParseException e) {
+      e.printStackTrace();
+      throw new FeedParseException();
+    } catch (SAXException e) {
+      e.printStackTrace();
+      throw new FeedParseException();
+    } catch (ParserConfigurationException e) {
+      e.printStackTrace();
+      throw new FeedParseException();
     }
-
-    public UpdateStatus pull(String etag) throws Exception {
-
-
-        HttpParams params = new BasicHttpParams();
-        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-        HttpProtocolParams.setContentCharset(params, "UTF-8");
-        HttpProtocolParams.setUseExpectContinue(params, true);
-        HttpProtocolParams.setHttpElementCharset(params, "UTF-8");
-
-        String agent = "ZooBorns ";
-
-
-        agent += "for android";
-
-        HttpProtocolParams.setUserAgent(params, agent);
-
-        DefaultHttpClient client = new DefaultHttpClient(params);
-
-        InputStream dataInput = null;
-
-        HttpGet method = new HttpGet(
-                "http://feeds.feedburner.com/Zooborns");
-        if (etag != null) {
-            method.addHeader("If-None-Match", etag);
-        }
-        HttpResponse res = client.execute(method);
-
-        Map<String, String> responseHeaderMap = new HashMap<String, String>();
-
-        for (Header h : res.getAllHeaders()) {
-            Log.d("FeedFetcher", h.getName() + ": " + h.getValue());
-            responseHeaderMap.put(h.getName(), h.getValue());
-        }
-
-        if (res.getStatusLine().getStatusCode() == 304) {
-            // feed not modified
-            return UpdateStatus.NOT_MODIFIED;
-        }
-        else {
-            if (responseHeaderMap.containsKey("ETag"))
-            this.etag = responseHeaderMap.get("ETag");
-        }
-
-        dataInput = res.getEntity().getContent();
-
-
-        rssDoc = null;
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db;
-
-        try {
-            db = dbf.newDocumentBuilder();
-            rssDoc = db.parse(dataInput);
-            dataInput.close();
-
-            rssDoc.getDocumentElement().normalize();
-        } catch (SAXParseException e) {
-            e.printStackTrace();
-            throw new FeedParseException();
-        } catch (SAXException e) {
-            e.printStackTrace();
-            throw new FeedParseException();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-            throw new FeedParseException();
-        }
-        return UpdateStatus.COMPLETE;
-    }
+    return UpdateStatus.COMPLETE;
+  }
 }
-
