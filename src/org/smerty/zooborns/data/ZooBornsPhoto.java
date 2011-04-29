@@ -21,7 +21,8 @@ public class ZooBornsPhoto implements Serializable {
     this.title = titleIn;
   }
 
-  public ZooBornsPhoto(final String urlIn, final String titleIn, final String altIn) {
+  public ZooBornsPhoto(final String urlIn, final String titleIn,
+      final String altIn) {
     super();
     this.url = urlIn;
     this.title = titleIn;

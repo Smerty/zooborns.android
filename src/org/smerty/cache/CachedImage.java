@@ -22,6 +22,10 @@ public class CachedImage implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  private static final int READ_BUFFER_SIZE = 512;
+  private static final int BUFFER_SIZE = 2048;
+  private static final int MILLIS_PER_SECOND = 1000;
+
   private String url;
   private File imagefile;
   private boolean complete;
@@ -178,8 +182,6 @@ public class CachedImage implements Serializable {
         offsetX = (width - height) / 2;
       } else if (height > width) {
         offsetY = (height - width) / 2;
-      } else {
-        // do nothing
       }
 
       float scaleWidth = ((float) newWidth) / (width - (offsetX * 2));
@@ -209,12 +211,12 @@ public class CachedImage implements Serializable {
         FileOutputStream imgout = new FileOutputStream(imgfile);
         InputStream ism = iconURL.openStream();
 
-        byte[] buffer = new byte[2048];
+        byte[] buffer = new byte[BUFFER_SIZE];
         int bytesRead;
 
         int totalBytes = 0;
 
-        while ((bytesRead = ism.read(buffer, 0, 512)) >= 0) {
+        while ((bytesRead = ism.read(buffer, 0, READ_BUFFER_SIZE)) >= 0) {
           imgout.write(buffer, 0, bytesRead);
           totalBytes += bytesRead;
         }
@@ -223,7 +225,7 @@ public class CachedImage implements Serializable {
         ism.close();
 
         double totTime = (double) (System.currentTimeMillis() - startTime)
-            / (double) 1000;
+            / (double) MILLIS_PER_SECOND;
         Log.d("DL perf", totalBytes + " bytes in " + totTime + " seconds ("
             + ((totalBytes * 1.0) / (startTime)) + ")");
 
