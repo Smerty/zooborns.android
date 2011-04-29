@@ -42,283 +42,273 @@ import android.widget.GridView;
 
 public class ZooBorns extends Activity {
 
-    public ImageCache imgCache;
-    public GridView gridview;
-    public ImageAdapter imgAdapter;
-    public ZooBornsGallery zGallery;
-    public int columnWidth = 128;
-    private AsyncTask<ZooBorns, Integer, Integer> updatetask;
+  public ImageCache imgCache;
+  public GridView gridview;
+  public ImageAdapter imgAdapter;
+  public ZooBornsGallery zGallery;
+  public int columnWidth = 128;
+  private AsyncTask<ZooBorns, Integer, Integer> updatetask;
 
-    public ProgressDialog progressDialog;
+  public ProgressDialog progressDialog;
 
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  /** Called when the activity is first created. */
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.main);
+    setContentView(R.layout.main);
 
-        final ZooBorns that = this;
+    final ZooBorns that = this;
 
-        if (gridview == null) {
-            gridview = (GridView) findViewById(R.id.gridview);
+    if (gridview == null) {
+      gridview = (GridView) findViewById(R.id.gridview);
 
-            Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
-                    .getDefaultDisplay();
+      Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
+          .getDefaultDisplay();
 
-            int displayWidth = display.getWidth();
+      int displayWidth = display.getWidth();
 
-            if (displayWidth / columnWidth < 2) {
-                columnWidth = 96;
-            }
+      if (displayWidth / columnWidth < 2) {
+        columnWidth = 96;
+      }
 
-            if (displayWidth / columnWidth < 2) {
-                columnWidth = 64;
-            }
+      if (displayWidth / columnWidth < 2) {
+        columnWidth = 64;
+      }
 
-            if (displayWidth / columnWidth < 2) {
-                columnWidth = 48;
-            }
+      if (displayWidth / columnWidth < 2) {
+        columnWidth = 48;
+      }
 
-            Log.d("setColumnWidth", "width: " + columnWidth);
-            gridview.setColumnWidth(columnWidth);
+      Log.d("setColumnWidth", "width: " + columnWidth);
+      gridview.setColumnWidth(columnWidth);
 
-            gridview.setOnItemClickListener(new OnItemClickListener() {
+      gridview.setOnItemClickListener(new OnItemClickListener() {
 
-                public void onItemClick(AdapterView<?> arg0, View arg1,
-                        int arg2, long arg3) {
-                    // TODO Auto-generated method stub
-                    int position = arg2;
+        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+            long arg3) {
+          // TODO Auto-generated method stub
+          int position = arg2;
 
-                    if (position >= that.imgCache.images.size()) {
-                        Log.d("onClick", "Position: " + position
-                                + " is out of range ("
-                                + that.imgCache.images.size() + ")");
-                        return;
-                    } else {
-                        Log.d("onClick", "Position: " + position
-                                + " is in range ("
-                                + that.imgCache.images.size() + ")");
-                    }
+          if (position >= that.imgCache.images.size()) {
+            Log.d("onClick", "Position: " + position + " is out of range ("
+                + that.imgCache.images.size() + ")");
+            return;
+          } else {
+            Log.d("onClick", "Position: " + position + " is in range ("
+                + that.imgCache.images.size() + ")");
+          }
 
-                    if (that.imgCache.images.get(position).isFailed()) {
-                        Log
-                                .d("onClick",
-                                        "clicked on a failed download, starting downloader...");
-                        that.imgCache.startDownloading();
-                    } else if (that.imgCache.images.get(position).isComplete()) {
-                        Log.d("onClick", "launching url: "
-                                + that.imgCache.images.get(position)
-                                        .filesystemUri());
-                        Intent i = new Intent(that, FullscreenImage.class);
-                        i.setData(Uri.parse(that.imgCache.images.get(position)
-                                .filesystemUri()));
-                        i.putExtra("currentImageIndex", position);
-                        ArrayList<CachedImage> cachedImageList = that.imgCache.getImages();
-                        i.putExtra("cachedImageList", cachedImageList);
-                        i.putExtra("gallery", zGallery);
-                        that.startActivity(i);
-                    } else {
-                        Log.d("onClick", "clicked on a... what did you click?");
-                    }
-                }
-
-            });
-
+          if (that.imgCache.images.get(position).isFailed()) {
+            Log.d("onClick",
+                "clicked on a failed download, starting downloader...");
+            that.imgCache.startDownloading();
+          } else if (that.imgCache.images.get(position).isComplete()) {
+            Log.d("onClick",
+                "launching url: "
+                    + that.imgCache.images.get(position).filesystemUri());
+            Intent i = new Intent(that, FullscreenImage.class);
+            i.setData(Uri.parse(that.imgCache.images.get(position)
+                .filesystemUri()));
+            i.putExtra("currentImageIndex", position);
+            ArrayList<CachedImage> cachedImageList = that.imgCache.getImages();
+            i.putExtra("cachedImageList", cachedImageList);
+            i.putExtra("gallery", zGallery);
+            that.startActivity(i);
+          } else {
+            Log.d("onClick", "clicked on a... what did you click?");
+          }
         }
 
-        if (imgAdapter == null) {
-            imgAdapter = new ImageAdapter(this);
-            gridview.setAdapter(imgAdapter);
-        }
-
-        if (zGallery == null) {
-            zGallery = new ZooBornsGallery();
-
-            if (this.updatetask == null) {
-                Log.d("startDownloading", "task was null, calling execute");
-                this.updatetask = new UpdateFeedTask().execute(this);
-            } else {
-                Status s = this.updatetask.getStatus();
-                if (s == Status.FINISHED) {
-                    Log
-                            .d("updatetask",
-                                    "task wasn't null, status finished, calling execute");
-                    this.updatetask = new UpdateFeedTask().execute(this);
-                }
-            }
-        }
-
-        Log.d("onCreate", "done.");
+      });
 
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-      super.onConfigurationChanged(newConfig);
-      if (gridview != null) {
-          setContentView(gridview);
+    if (imgAdapter == null) {
+      imgAdapter = new ImageAdapter(this);
+      gridview.setAdapter(imgAdapter);
+    }
+
+    if (zGallery == null) {
+      zGallery = new ZooBornsGallery();
+
+      if (this.updatetask == null) {
+        Log.d("startDownloading", "task was null, calling execute");
+        this.updatetask = new UpdateFeedTask().execute(this);
+      } else {
+        Status s = this.updatetask.getStatus();
+        if (s == Status.FINISHED) {
+          Log.d("updatetask",
+              "task wasn't null, status finished, calling execute");
+          this.updatetask = new UpdateFeedTask().execute(this);
+        }
       }
     }
 
-    private class UpdateFeedTask extends AsyncTask<ZooBorns, Integer, Integer> {
+    Log.d("onCreate", "done.");
 
-        ZooBorns that;
+  }
 
-        protected Integer doInBackground(ZooBorns... thats) {
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    if (gridview != null) {
+      setContentView(gridview);
+    }
+  }
 
-            if (that == null) {
-                this.that = thats[0];
-            }
+  private class UpdateFeedTask extends AsyncTask<ZooBorns, Integer, Integer> {
 
-            publishProgress(0);
+    ZooBorns that;
 
-            try {
-                SharedPreferences settings = getSharedPreferences(
-                        "ZooBornsPrefs", 0);
-                String etag = settings.getString("etag", null);
+    protected Integer doInBackground(ZooBorns... thats) {
 
-                that.zGallery.update(etag);
+      if (that == null) {
+        this.that = thats[0];
+      }
 
-                File rootDir = Environment.getExternalStorageDirectory();
-                rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
+      publishProgress(0);
 
-                if (!rootDir.isDirectory()) {
-                    if (rootDir.mkdir()) {
-                        Log.d("download", "mkdir: " + rootDir.getAbsolutePath());
-                    } else {
-                        Log.d("download",
-                                "mkdir failed: " + rootDir.getAbsolutePath());
-                        throw new RuntimeException(
-                                "failed to create storage directory");
-                    }
-                }
+      try {
+        SharedPreferences settings = getSharedPreferences("ZooBornsPrefs", 0);
+        String etag = settings.getString("etag", null);
 
-                if (!rootDir.canWrite()) {
-                    throw new RuntimeException("storage directory not writable");
-                }
+        that.zGallery.update(etag);
 
-                File cache = new File(rootDir, "cache.file");
+        File rootDir = Environment.getExternalStorageDirectory();
+        rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
 
-                if (that.zGallery.getEtag() != null) {
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putString("etag", that.zGallery.getEtag());
-                    editor.commit();
-
-                    OutputStream file = new FileOutputStream(cache);
-                    ObjectOutput output = new ObjectOutputStream(file);
-                    try {
-                        output.writeObject(that.zGallery);
-                    } finally {
-                        output.close();
-                    }
-                } else {
-
-                    InputStream file = new FileInputStream(cache);
-                    ObjectInput input = new ObjectInputStream(file);
-                    try {
-                        // deserialize the List
-                        that.zGallery = (ZooBornsGallery) input.readObject();
-                    } finally {
-                        input.close();
-                    }
-
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return 0;
-            } catch (FeedParseException e) {
-                return 0;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return 0;
-            } finally {
-                // clean up code here
-            }
-
-            if (that.imgCache == null) {
-                that.imgCache = new ImageCache(that);
-            }
-
-            for (ZooBornsEntry entry : that.zGallery.entries) {
-                for (ZooBornsPhoto photo : entry.getPhotos()) {
-                    that.imgCache.add(photo.getUrl());
-                }
-            }
-
-            return 0;
+        if (!rootDir.isDirectory()) {
+          if (rootDir.mkdir()) {
+            Log.d("download", "mkdir: " + rootDir.getAbsolutePath());
+          } else {
+            Log.d("download", "mkdir failed: " + rootDir.getAbsolutePath());
+            throw new RuntimeException("failed to create storage directory");
+          }
         }
 
-        protected void onProgressUpdate(Integer... progress) {
-            Log.d("onProgressUpdate", progress[0].toString());
-            if (progress[0] == 0) {
-                that.progressDialog = ProgressDialog.show(that, "ZooBorns",
-                        "Downloading ZooBorns Feed", true, false);
-            }
+        if (!rootDir.canWrite()) {
+          throw new RuntimeException("storage directory not writable");
+        }
+
+        File cache = new File(rootDir, "cache.file");
+
+        if (that.zGallery.getEtag() != null) {
+          SharedPreferences.Editor editor = settings.edit();
+          editor.putString("etag", that.zGallery.getEtag());
+          editor.commit();
+
+          OutputStream file = new FileOutputStream(cache);
+          ObjectOutput output = new ObjectOutputStream(file);
+          try {
+            output.writeObject(that.zGallery);
+          } finally {
+            output.close();
+          }
+        } else {
+
+          InputStream file = new FileInputStream(cache);
+          ObjectInput input = new ObjectInputStream(file);
+          try {
+            // deserialize the List
+            that.zGallery = (ZooBornsGallery) input.readObject();
+          } finally {
+            input.close();
+          }
 
         }
 
-        protected void onCancelled() {
-            super.onCancelled();
-            that.progressDialog.dismiss();
-        }
+      } catch (IOException e) {
+        e.printStackTrace();
+        return 0;
+      } catch (FeedParseException e) {
+        return 0;
+      } catch (Exception e) {
+        e.printStackTrace();
+        return 0;
+      } finally {
+        // clean up code here
+      }
 
-        protected void onPostExecute(Integer result) {
-            Log.d("onPostExecute", that.getApplicationInfo().packageName);
-            that.progressDialog.dismiss();
-            if (that.imgCache != null) {
-                that.imgCache.startDownloading();
-            }
+      if (that.imgCache == null) {
+        that.imgCache = new ImageCache(that);
+      }
+
+      for (ZooBornsEntry entry : that.zGallery.entries) {
+        for (ZooBornsPhoto photo : entry.getPhotos()) {
+          that.imgCache.add(photo.getUrl());
         }
+      }
+
+      return 0;
     }
 
-    public static final int MENU_QUIT = 10;
-    public static final int MENU_REFRESH = 11;
-    public static final int MENU_CLEAR = 12;
+    protected void onProgressUpdate(Integer... progress) {
+      Log.d("onProgressUpdate", progress[0].toString());
+      if (progress[0] == 0) {
+        that.progressDialog = ProgressDialog.show(that, "ZooBorns",
+            "Downloading ZooBorns Feed", true, false);
+      }
 
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_CLEAR, 0, "Purge Data");
-        menu.add(0, MENU_QUIT, 0, "Exit");
-        return true;
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case MENU_QUIT:
-            this.finish();
-            return true;
-        case MENU_CLEAR:
+    protected void onCancelled() {
+      super.onCancelled();
+      that.progressDialog.dismiss();
+    }
 
-            SharedPreferences settings = getSharedPreferences(
-                    "ZooBornsPrefs", 0);
+    protected void onPostExecute(Integer result) {
+      Log.d("onPostExecute", that.getApplicationInfo().packageName);
+      that.progressDialog.dismiss();
+      if (that.imgCache != null) {
+        that.imgCache.startDownloading();
+      }
+    }
+  }
 
-            SharedPreferences.Editor editor = settings.edit();
-            //editor.putString("etag", null);
-            editor.remove("etag");
-            editor.commit();
+  public static final int MENU_QUIT = 10;
+  public static final int MENU_REFRESH = 11;
+  public static final int MENU_CLEAR = 12;
 
-            // this should be replaced with the purge method in ImageCache
-            File rootDir = Environment.getExternalStorageDirectory();
-            rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
+  public boolean onCreateOptionsMenu(Menu menu) {
+    menu.add(0, MENU_CLEAR, 0, "Purge Data");
+    menu.add(0, MENU_QUIT, 0, "Exit");
+    return true;
+  }
 
-            for (File file : rootDir.listFiles()) {
-                    Log.d("CLEAR IT", "Deleting old image: " + file.getAbsolutePath());
-                    if(!file.delete()) {
-                        Log.d("purge", "Can't delete: " + file.getAbsolutePath());
-                    }
-                    else {
-                        Log.d("purge", "Deleted: " + file.getAbsolutePath());
-                    }
-            }
-            this.finish();
-            return true;
-        case MENU_REFRESH:
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+    case MENU_QUIT:
+      this.finish();
+      return true;
+    case MENU_CLEAR:
 
-            return true;
+      SharedPreferences settings = getSharedPreferences("ZooBornsPrefs", 0);
 
+      SharedPreferences.Editor editor = settings.edit();
+      // editor.putString("etag", null);
+      editor.remove("etag");
+      editor.commit();
+
+      // this should be replaced with the purge method in ImageCache
+      File rootDir = Environment.getExternalStorageDirectory();
+      rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
+
+      for (File file : rootDir.listFiles()) {
+        Log.d("CLEAR IT", "Deleting old image: " + file.getAbsolutePath());
+        if (!file.delete()) {
+          Log.d("purge", "Can't delete: " + file.getAbsolutePath());
+        } else {
+          Log.d("purge", "Deleted: " + file.getAbsolutePath());
         }
-        return false;
+      }
+      this.finish();
+      return true;
+    case MENU_REFRESH:
+
+      return true;
+
     }
+    return false;
+  }
 }
