@@ -16,7 +16,10 @@ public class ImageAdapter extends BaseAdapter {
   }
 
   public int getCount() {
-    return (that.imgCache != null) ? that.imgCache.images.size() : 0;
+    if (that.imgCache != null) {
+      return that.imgCache.getImages().size();
+    }
+    return 0;
   }
 
   public Object getItem(int position) {
@@ -46,21 +49,22 @@ public class ImageAdapter extends BaseAdapter {
         return null;
       }
     }
-    if (position < that.imgCache.images.size()
-        && (that.imgCache.images.get(position).isComplete() || that.imgCache.images
+    if (position < that.imgCache.getImages().size()
+        && (that.imgCache.getImages().get(position).isComplete() || that.imgCache.getImages()
             .get(position).isFailed())) {
 
       try {
-        if (that.imgCache.images.get(position).getBitmapIcon() != null) {
-          imageView.setImageBitmap(that.imgCache.images.get(position)
+        if (that.imgCache.getImages().get(position).getBitmapIcon() != null) {
+          imageView.setImageBitmap(that.imgCache.getImages().get(position)
               .getBitmapIcon());
 
         } else {
           imageView.setImageDrawable(that.getResources().getDrawable(
               R.drawable.ic_menu_delete));
         }
-      } finally {
-        // do nothing
+      } catch (Exception e) {
+        Log.d("getView", "ignoring caught exception: "
+            + e.getClass().getCanonicalName() + " " + e.getMessage());
       }
     } else {
       imageView.setImageDrawable(that.getResources().getDrawable(
