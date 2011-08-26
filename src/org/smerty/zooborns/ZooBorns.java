@@ -301,11 +301,15 @@ public class ZooBorns extends Activity {
       rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
 
       for (File file : rootDir.listFiles()) {
-        Log.d("CLEAR IT", "Deleting old image: " + file.getAbsolutePath());
-        if (!file.delete()) {
-          Log.d("purge", "Can't delete: " + file.getAbsolutePath());
+        if (file != null) {
+          Log.d("CLEAR IT", "Deleting old image: " + file.getAbsolutePath());
+          if (!file.delete()) {
+            Log.d("purge", "Can't delete: " + file.getAbsolutePath());
+          } else {
+            Log.d("purge", "Deleted: " + file.getAbsolutePath());
+          }
         } else {
-          Log.d("purge", "Deleted: " + file.getAbsolutePath());
+          Log.d("purge", "file (" + file + ") was null?");
         }
       }
       this.finish();
