@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import org.smerty.zooborns.ZooBorns;
 
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Environment;
@@ -149,7 +148,6 @@ public class ImageCache {
         if (imgCache.images.get(n).imageFileExists()) {
           Log.d("DownloadFilesTask:doInBackground",
               "skipping, marking complete");
-          imgCache.images.get(n).thumbnail(that.columnWidth);
           imgCache.images.get(n).setComplete(true);
           imgCache.images.get(n).setFailed(false);
         }
@@ -163,16 +161,12 @@ public class ImageCache {
         }
 
         if (imgCache.images.get(n).download()) {
-          imgCache.images.get(n).thumbnail(that.columnWidth);
           imgCache.images.get(n).setComplete(true);
           imgCache.images.get(n).setFailed(false);
           Log.d("DownloadFilesTask:doInBackground", "success");
         } else {
           Log.d("DownloadFilesTask:doInBackground", "failure");
           imgCache.images.get(n).setFailed(true);
-          imgCache.images.get(n).setBitmapIcon(
-              ((BitmapDrawable) that.getResources().getDrawable(
-                  android.R.drawable.ic_menu_close_clear_cancel)).getBitmap());
         }
         publishProgress((int) ((doneCount++ / (float) imgCache.images.size()) * COMPLETE_PERCENT));
 
@@ -184,12 +178,12 @@ public class ImageCache {
     }
 
     protected void onProgressUpdate(Integer... progress) {
-      Log.d("onProgressUpdate", progress[0].toString());
+      Log.d("ImageCache:onProgressUpdate", progress[0].toString());
       that.imgAdapter.notifyDataSetChanged();
     }
 
     protected void onPostExecute(ImageCache result) {
-      Log.d("onPostExecute", that.getApplicationInfo().packageName);
+      Log.d("ImageCache:onPostExecute", that.getApplicationInfo().packageName);
     }
   }
 }
