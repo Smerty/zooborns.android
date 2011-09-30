@@ -54,6 +54,9 @@ public class ImageAdapter extends BaseAdapter {
             .getImages().get(position).isFailed())) {
 
       try {
+        if (that.imgCache.getImages().get(position).getBitmapIcon() == null) {
+          that.imgCache.getImages().get(position).thumbnail(that.columnWidth);
+        }
         if (that.imgCache.getImages().get(position).getBitmapIcon() != null) {
           imageView.setImageBitmap(that.imgCache.getImages().get(position)
               .getBitmapIcon());
