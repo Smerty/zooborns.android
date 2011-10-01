@@ -20,6 +20,7 @@ import org.smerty.zooborns.data.ZooBornsPhoto;
 import org.smerty.zooborns.feed.FeedParseException;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -63,6 +64,14 @@ public class ZooBorns extends Activity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    // after each launch we want to wait another interval before polling.
+    SetupAlarm.setup(this.getApplicationContext());
+
+    // clear all notifications
+    NotificationManager notificationMgr =
+      (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+    notificationMgr.cancelAll();
 
     setContentView(R.layout.main);
 
@@ -294,6 +303,7 @@ public class ZooBorns extends Activity {
       SharedPreferences.Editor editor = settings.edit();
       // editor.putString("etag", null);
       editor.remove("etag");
+      //editor.remove("lastNotificationEtag"); // don't notify again even if we purge
       editor.commit();
 
       // this should be replaced with the purge method in ImageCache
