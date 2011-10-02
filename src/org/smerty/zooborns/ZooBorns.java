@@ -20,8 +20,11 @@ import org.smerty.zooborns.data.ZooBornsPhoto;
 import org.smerty.zooborns.feed.FeedParseException;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -57,12 +60,25 @@ public class ZooBorns extends Activity {
   public int columnWidth = LARGE_WIDTH;
   private AsyncTask<ZooBorns, Integer, Integer> updatetask;
 
+  private SharedPreferences settings;
+
   public ProgressDialog progressDialog;
 
   /** Called when the activity is first created. */
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    if (settings == null)
+      settings = this.getSharedPreferences("ZooBornsPrefs", 0);
+
+    // after each launch we want to wait another interval before polling.
+    SetupAlarm.setup(this.getApplicationContext());
+
+    // clear all notifications
+    NotificationManager notificationMgr =
+      (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+    notificationMgr.cancelAll();
 
     setContentView(R.layout.main);
 
@@ -275,25 +291,28 @@ public class ZooBorns extends Activity {
   public static final int MENU_QUIT = 10;
   public static final int MENU_REFRESH = 11;
   public static final int MENU_CLEAR = 12;
+  public static final int MENU_SETTINGS = 13;
 
   public boolean onCreateOptionsMenu(Menu menu) {
+    menu.add(0, MENU_SETTINGS, 0, "Settings");
     menu.add(0, MENU_CLEAR, 0, "Purge Data");
     menu.add(0, MENU_QUIT, 0, "Exit");
     return true;
   }
 
   public boolean onOptionsItemSelected(MenuItem item) {
+
+
+
     switch (item.getItemId()) {
     case MENU_QUIT:
       this.finish();
       return true;
     case MENU_CLEAR:
-
-      SharedPreferences settings = getSharedPreferences("ZooBornsPrefs", 0);
-
       SharedPreferences.Editor editor = settings.edit();
       // editor.putString("etag", null);
       editor.remove("etag");
+      //editor.remove("lastNotificationEtag"); // don't notify again even if we purge
       editor.commit();
 
       // this should be replaced with the purge method in ImageCache
@@ -314,10 +333,29 @@ public class ZooBorns extends Activity {
       }
       this.finish();
       return true;
-    case MENU_REFRESH:
-
+    case MENU_SETTINGS:
+      Log.d("settingsMenu", "dialog");
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder.setMessage("Enable notifications for new ZooBorns photos?")
+          .setCancelable(false)
+          .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+              SharedPreferences.Editor editorDialog = settings.edit();
+              editorDialog.putBoolean("notifications", true);
+              editorDialog.commit();
+              dialog.dismiss();
+            }
+          }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+              SharedPreferences.Editor editorDialog = settings.edit();
+              editorDialog.putBoolean("notifications", false);
+              editorDialog.commit();
+              dialog.cancel();
+            }
+          });
+      AlertDialog alert = builder.create();
+      alert.show();
       return true;
-
     }
     return false;
   }
