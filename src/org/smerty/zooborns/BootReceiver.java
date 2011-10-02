@@ -7,12 +7,12 @@ import android.util.Log;
 
 public class BootReceiver extends BroadcastReceiver {
 
-    private static final String TAG = BootReceiver.class.getName();
+  private static final String TAG = BootReceiver.class.getName();
 
-	@Override
-	public void onReceive(Context context, Intent callingIntent) {
-		Log.d(TAG, "Inside onReceived method.");
-		SetupAlarm.setup(context);
-	}
+  @Override
+  public void onReceive(Context context, Intent callingIntent) {
+    Log.d(TAG, "Inside onReceived method.");
+    SetupAlarm.setup(context);
+  }
 
 }

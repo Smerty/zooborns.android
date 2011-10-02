@@ -10,24 +10,24 @@ import android.util.Log;
 
 public class SetupAlarm {
 
-    private static final String TAG = SetupAlarm.class.getName();
+  private static final String TAG = SetupAlarm.class.getName();
 
-	public static void setup(Context context) {
+  public static void setup(Context context) {
 
-		Log.d(TAG, "Inside setup method.");
+    Log.d(TAG, "Inside setup method.");
 
-	    Intent intent = new Intent(context, UpdateService.class);
-	    PendingIntent pendingIntent = PendingIntent.getService(context, -1, intent,
-	        PendingIntent.FLAG_CANCEL_CURRENT);
+    Intent intent = new Intent(context, UpdateService.class);
+    PendingIntent pendingIntent = PendingIntent.getService(context, -1, intent,
+        PendingIntent.FLAG_CANCEL_CURRENT);
 
-	    AlarmManager alarmManager = (AlarmManager) context
-	        .getSystemService(Context.ALARM_SERVICE);
+    AlarmManager alarmManager = (AlarmManager) context
+        .getSystemService(Context.ALARM_SERVICE);
 
-	    long interval = AlarmManager.INTERVAL_HOUR;
+    long interval = AlarmManager.INTERVAL_HOUR;
 
-		alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System
-	        .currentTimeMillis(), interval, pendingIntent); //
+    alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
+        System.currentTimeMillis(), interval, pendingIntent); //
 
-	}
+  }
 
 }

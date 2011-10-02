@@ -19,11 +19,11 @@
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>
-    
+
     <receiver android:name="org.smerty.zooborns.BootReceiver">
-    		<intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+      </intent-filter>
     </receiver>
     
     <service android:name="org.smerty.zooborns.feed.UpdateService" />

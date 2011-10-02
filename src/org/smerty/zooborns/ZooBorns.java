@@ -334,33 +334,28 @@ public class ZooBorns extends Activity {
       this.finish();
       return true;
     case MENU_SETTINGS:
-
-
-        Log.d("settingsMenu", "dialog");
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Enable notifications for new ZooBorns photos?")
-               .setCancelable(false)
-               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
-                     SharedPreferences.Editor editorDialog = settings.edit();
-                     editorDialog.putBoolean("notifications", true);
-                     editorDialog.commit();
-                        dialog.dismiss();
-                   }
-               })
-               .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
-                        SharedPreferences.Editor editorDialog = settings.edit();
-                        editorDialog.putBoolean("notifications", false);
-                        editorDialog.commit();
-                        dialog.cancel();
-                   }
-               });
-        AlertDialog alert = builder.create();
-        alert.show();
-
+      Log.d("settingsMenu", "dialog");
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder.setMessage("Enable notifications for new ZooBorns photos?")
+          .setCancelable(false)
+          .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+              SharedPreferences.Editor editorDialog = settings.edit();
+              editorDialog.putBoolean("notifications", true);
+              editorDialog.commit();
+              dialog.dismiss();
+            }
+          }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+              SharedPreferences.Editor editorDialog = settings.edit();
+              editorDialog.putBoolean("notifications", false);
+              editorDialog.commit();
+              dialog.cancel();
+            }
+          });
+      AlertDialog alert = builder.create();
+      alert.show();
       return true;
-
     }
     return false;
   }
