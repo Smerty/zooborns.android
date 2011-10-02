@@ -43,6 +43,14 @@ public class UpdateService extends IntentService {
 	protected void onHandleIntent(Intent inboundIntent) {
 	    Log.d(TAG, "onHandleIntent");
 
+	    SharedPreferences settings = getSharedPreferences(
+            "ZooBornsPrefs", 0);
+
+	    if (!settings.getBoolean("notifications", true)) {
+	      Log.d(TAG, "Notifications disabled, skipping update check.");
+	      return;
+	    }
+
 	    HttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, "UTF-8");
@@ -57,8 +65,6 @@ public class UpdateService extends IntentService {
 
         DefaultHttpClient client = new DefaultHttpClient(params);
 
-        SharedPreferences settings = getSharedPreferences(
-                "ZooBornsPrefs", 0);
         String etag = settings.getString("etag", null);
 
         HttpHead method = new HttpHead(
