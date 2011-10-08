@@ -45,6 +45,8 @@ import android.widget.GridView;
 
 public class ZooBorns extends Activity {
 
+  private static final String TAG = ZooBorns.class.getName();
+
   private static final int TINY_WIDTH = 48;
 
   private static final int SMALL_WIDTH = 64;
@@ -104,7 +106,7 @@ public class ZooBorns extends Activity {
         columnWidth = TINY_WIDTH;
       }
 
-      Log.d("setColumnWidth", "width: " + columnWidth);
+      Log.d(TAG, "setColumnWidth: width=" + columnWidth);
       gridview.setColumnWidth(columnWidth);
 
       gridview.setOnItemClickListener(new OnItemClickListener() {
@@ -115,21 +117,21 @@ public class ZooBorns extends Activity {
           int position = arg2;
 
           if (position >= that.imgCache.getImages().size()) {
-            Log.d("onClick", "Position: " + position + " is out of range ("
+            Log.d(TAG, "onClick Position: " + position + " is out of range ("
                 + that.imgCache.getImages().size() + ")");
             return;
           } else {
-            Log.d("onClick", "Position: " + position + " is in range ("
+            Log.d(TAG, "onClick Position: " + position + " is in range ("
                 + that.imgCache.getImages().size() + ")");
           }
 
           if (that.imgCache.getImages().get(position).isFailed()) {
-            Log.d("onClick",
-                "clicked on a failed download, starting downloader...");
+            Log.d(TAG,
+                "onClick clicked on a failed download, starting downloader...");
             that.imgCache.startDownloading();
           } else if (that.imgCache.getImages().get(position).isComplete()) {
-            Log.d("onClick",
-                "launching url: "
+            Log.d(TAG,
+                "onClick launching url: "
                     + that.imgCache.getImages().get(position).filesystemUri());
             Intent i = new Intent(that, FullscreenImage.class);
             i.setData(Uri.parse(that.imgCache.getImages().get(position)
@@ -140,7 +142,7 @@ public class ZooBorns extends Activity {
             i.putExtra("gallery", zGallery);
             that.startActivity(i);
           } else {
-            Log.d("onClick", "clicked on a... what did you click?");
+            Log.d(TAG, "onClick clicked on a... what did you click?");
           }
         }
 
@@ -157,19 +159,19 @@ public class ZooBorns extends Activity {
       zGallery = new ZooBornsGallery();
 
       if (this.updatetask == null) {
-        Log.d("startDownloading", "task was null, calling execute");
+        Log.d(TAG, "startDownloading, task was null, calling execute");
         this.updatetask = new UpdateFeedTask().execute(this);
       } else {
         Status s = this.updatetask.getStatus();
         if (s == Status.FINISHED) {
-          Log.d("updatetask",
-              "task wasn't null, status finished, calling execute");
+          Log.d(TAG,
+              "updatetask, task wasn't null, status finished, calling execute");
           this.updatetask = new UpdateFeedTask().execute(this);
         }
       }
     }
 
-    Log.d("onCreate", "done.");
+    Log.d(TAG, "onCreate done.");
 
   }
 
@@ -204,9 +206,9 @@ public class ZooBorns extends Activity {
 
         if (!rootDir.isDirectory()) {
           if (rootDir.mkdir()) {
-            Log.d("download", "mkdir: " + rootDir.getAbsolutePath());
+            Log.d(TAG, "download mkdir: " + rootDir.getAbsolutePath());
           } else {
-            Log.d("download", "mkdir failed: " + rootDir.getAbsolutePath());
+            Log.d(TAG, "download mkdir failed: " + rootDir.getAbsolutePath());
             throw new RuntimeException("failed to create storage directory");
           }
         }
@@ -266,7 +268,7 @@ public class ZooBorns extends Activity {
     }
 
     protected void onProgressUpdate(Integer... progress) {
-      Log.d("onProgressUpdate", progress[0].toString());
+      Log.d(TAG, "onProgressUpdate " + progress[0].toString());
       if (progress[0] == 0) {
         that.progressDialog = ProgressDialog.show(that, "ZooBorns",
             "Downloading ZooBorns Feed", true, false);
@@ -280,7 +282,7 @@ public class ZooBorns extends Activity {
     }
 
     protected void onPostExecute(Integer result) {
-      Log.d("onPostExecute", that.getApplicationInfo().packageName);
+      Log.d(TAG, "onPostExecute " + that.getApplicationInfo().packageName);
       that.progressDialog.dismiss();
       if (that.imgCache != null) {
         that.imgCache.startDownloading();
@@ -321,20 +323,20 @@ public class ZooBorns extends Activity {
 
       for (File file : rootDir.listFiles()) {
         if (file != null) {
-          Log.d("CLEAR IT", "Deleting old image: " + file.getAbsolutePath());
+          Log.d(TAG, "CLEAR IT Deleting old image: " + file.getAbsolutePath());
           if (!file.delete()) {
-            Log.d("purge", "Can't delete: " + file.getAbsolutePath());
+            Log.d(TAG, "purge Can't delete: " + file.getAbsolutePath());
           } else {
-            Log.d("purge", "Deleted: " + file.getAbsolutePath());
+            Log.d(TAG, " purgeDeleted: " + file.getAbsolutePath());
           }
         } else {
-          Log.d("purge", "file (" + file + ") was null?");
+          Log.d(TAG, "purge file (" + file + ") was null?");
         }
       }
       this.finish();
       return true;
     case MENU_SETTINGS:
-      Log.d("settingsMenu", "dialog");
+      Log.d(TAG, "settingsMenu dialog");
       AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setMessage("Enable notifications for new ZooBorns photos?")
           .setCancelable(false)

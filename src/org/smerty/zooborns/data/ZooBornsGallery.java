@@ -16,6 +16,8 @@ import android.util.Log;
 
 public class ZooBornsGallery implements Serializable {
 
+  private static final String TAG = ZooBornsGallery.class.getName();
+
   private static final long serialVersionUID = 1L;
 
   private String etag;
@@ -45,7 +47,7 @@ public class ZooBornsGallery implements Serializable {
     Document doc = fFetcher.getDoc();
 
     if (doc == null) {
-      Log.d("update", "doc was null");
+      Log.d(TAG, "update doc was null");
       return false;
     }
 
@@ -77,13 +79,13 @@ public class ZooBornsGallery implements Serializable {
         String entryContent = (fstNm.item(0)).getNodeValue();
 
         if (title != null && title.length() > 0) {
-          Log.d("ZooBornsGallery", "Entry Title : " + title);
+          Log.d(TAG, "Entry Title : " + title);
 
           ZooBornsEntry zE = new ZooBornsEntry(entryUrl, title, entryContent);
 
           NodeList contentNodes = fstElmnt.getElementsByTagName("content");
 
-          Log.d("ZooBornsGallery",
+          Log.d(TAG,
               "content tag count : " + contentNodes.getLength());
 
           if (contentNodes.getLength() == 1) {
