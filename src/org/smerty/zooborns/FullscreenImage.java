@@ -191,10 +191,11 @@ public class FullscreenImage extends Activity {
       sendAlert.show();
       return true;
     case MENU_FULLSTORY:
-      if (entry != null && entry.getBody() != null
-          && entry.getBody().length() > 0) {
+      final String body = entry.getBody();
+      if (entry != null && body != null
+          && body.length() > 0) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(entry.getBody()).setCancelable(true)
+        builder.setMessage(body).setCancelable(true)
             .setNegativeButton("Done", new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
