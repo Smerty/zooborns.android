@@ -12,6 +12,8 @@ import android.util.Log;
 
 public class ImageCache {
 
+  private static final String TAG = ImageCache.class.getName();
+
   private ZooBorns mContext;
   private ArrayList<CachedImage> images;
   private File rootDir;
@@ -27,9 +29,9 @@ public class ImageCache {
 
     if (!rootDir.isDirectory()) {
       if (rootDir.mkdir()) {
-        Log.d("download", "mkdir: " + rootDir.getAbsolutePath());
+        Log.d(TAG, "download mkdir: " + rootDir.getAbsolutePath());
       } else {
-        Log.d("download", "mkdir failed: " + rootDir.getAbsolutePath());
+        Log.d(TAG, "download mkdir failed: " + rootDir.getAbsolutePath());
         throw new RuntimeException("failed to create storage directory");
       }
     }
@@ -70,9 +72,9 @@ public class ImageCache {
 
     for (File file : rootDir.listFiles()) {
       if (!file.delete()) {
-        Log.d("purge", "Can't delete: " + file.getAbsolutePath());
+        Log.d(TAG, "purge Can't delete: " + file.getAbsolutePath());
       } else {
-        Log.d("purge", "Deleted: " + file.getAbsolutePath());
+        Log.d(TAG, "purge Deleted: " + file.getAbsolutePath());
       }
     }
 
@@ -82,23 +84,23 @@ public class ImageCache {
   public void startDownloading() {
 
     if (this.task == null) {
-      Log.d("startDownloading", "task was null, calling execute");
+      Log.d(TAG, "startDownloading task was null, calling execute");
       task = new DownloadFilesTask().execute(0);
     } else {
       Status s = this.task.getStatus();
       if (s == Status.FINISHED) {
         // todo: something
-        Log.d("startDownloading",
-            "task wasn't null, status finished, calling execute");
+        Log.d(TAG,
+            "startDownloading task wasn't null, status finished, calling execute");
         task = new DownloadFilesTask().execute(0);
       } else if (s == Status.PENDING) {
         // todo: something
-        Log.d("startDownloading", "task wasn't null, status pending");
+        Log.d(TAG, "startDownloading task wasn't null, status pending");
       } else if (s == Status.RUNNING) {
         // todo: something
-        Log.d("startDownloading", "task wasn't null, status running");
+        Log.d(TAG, "startDownloading task wasn't null, status running");
       } else {
-        Log.d("startDownloading", "task wasn't null, status unknown");
+        Log.d(TAG, "startDownloading task wasn't null, status unknown");
       }
 
     }
@@ -132,29 +134,29 @@ public class ImageCache {
       for (File file : rootDir.listFiles()) {
         if (!imgCache.isActive(file)
             && !file.getName().equalsIgnoreCase("cache.file")) {
-          Log.d("DownloadFilesTask:doInBackground", "Deleting old image: "
+          Log.d(TAG, "DownloadFilesTask:doInBackground Deleting old image: "
               + file.getAbsolutePath());
           if (!file.delete()) {
-            Log.d("DownloadFilesTask:doInBackground",
-                "Can't delete: " + file.getAbsolutePath());
+            Log.d(TAG,
+                "DownloadFilesTask:doInBackground Can't delete: " + file.getAbsolutePath());
           } else {
-            Log.d("DownloadFilesTask:doInBackground",
-                "Deleted: " + file.getAbsolutePath());
+            Log.d(TAG,
+                "DownloadFilesTask:doInBackground Deleted: " + file.getAbsolutePath());
           }
         }
       }
 
       for (int n = 0; n < imgCache.images.size(); n++) {
         if (imgCache.images.get(n).imageFileExists()) {
-          Log.d("DownloadFilesTask:doInBackground",
-              "skipping, marking complete");
+          Log.d(TAG,
+              "DownloadFilesTask:doInBackground skipping, marking complete");
           imgCache.images.get(n).setComplete(true);
           imgCache.images.get(n).setFailed(false);
         }
       }
 
       for (int n = 0; n < imgCache.images.size(); n++) {
-        Log.d("DownloadFilesTask:doInBackground", imgCache.images.get(n)
+        Log.d(TAG, "DownloadFilesTask:doInBackground" + imgCache.images.get(n)
             .getUrl());
         if (imgCache.images.get(n).isComplete()) {
           continue;
@@ -163,9 +165,9 @@ public class ImageCache {
         if (imgCache.images.get(n).download()) {
           imgCache.images.get(n).setComplete(true);
           imgCache.images.get(n).setFailed(false);
-          Log.d("DownloadFilesTask:doInBackground", "success");
+          Log.d(TAG, "DownloadFilesTask:doInBackground success");
         } else {
-          Log.d("DownloadFilesTask:doInBackground", "failure");
+          Log.d(TAG, "DownloadFilesTask:doInBackground failure");
           imgCache.images.get(n).setFailed(true);
         }
         publishProgress((int) ((doneCount++ / (float) imgCache.images.size()) * COMPLETE_PERCENT));
@@ -178,12 +180,12 @@ public class ImageCache {
     }
 
     protected void onProgressUpdate(Integer... progress) {
-      Log.d("ImageCache:onProgressUpdate", progress[0].toString());
+      Log.d(TAG, "ImageCache:onProgressUpdate" + progress[0].toString());
       that.imgAdapter.notifyDataSetChanged();
     }
 
     protected void onPostExecute(ImageCache result) {
-      Log.d("ImageCache:onPostExecute", that.getApplicationInfo().packageName);
+      Log.d(TAG, "ImageCache:onPostExecute" + that.getApplicationInfo().packageName);
     }
   }
 }

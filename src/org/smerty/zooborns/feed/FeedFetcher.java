@@ -24,6 +24,8 @@ import android.util.Log;
 
 public class FeedFetcher {
 
+  private static final String TAG = FeedFetcher.class.getName();
+
   private static final int NOT_MODIFIED_HTTP_CODE = 304;
 
   private Document rssDoc;
@@ -50,9 +52,7 @@ public class FeedFetcher {
     HttpProtocolParams.setUseExpectContinue(params, true);
     HttpProtocolParams.setHttpElementCharset(params, "UTF-8");
 
-    String agent = "ZooBorns ";
-
-    agent += "for android";
+    String agent = "ZooBorns for android";
 
     HttpProtocolParams.setUserAgent(params, agent);
 
@@ -69,7 +69,7 @@ public class FeedFetcher {
     Map<String, String> responseHeaderMap = new HashMap<String, String>();
 
     for (Header h : res.getAllHeaders()) {
-      Log.d("FeedFetcher", h.getName() + ": " + h.getValue());
+      Log.d(TAG, h.getName() + ": " + h.getValue());
       responseHeaderMap.put(h.getName(), h.getValue());
     }
 

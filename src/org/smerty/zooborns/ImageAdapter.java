@@ -9,6 +9,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 public class ImageAdapter extends BaseAdapter {
+
+  private static final String TAG = ImageAdapter.class.getName();
+
   private ZooBorns that;
 
   public ImageAdapter(ZooBorns c) {
@@ -31,7 +34,7 @@ public class ImageAdapter extends BaseAdapter {
   }
 
   public View getView(int position, View convertView, ViewGroup parent) {
-    // Log.d("ImageAdapter", "getView()");
+    // Log.d(TAG, "getView()");
 
     ImageView imageView;
     if (convertView == null) {
@@ -44,7 +47,7 @@ public class ImageAdapter extends BaseAdapter {
       if (convertView instanceof ImageView) {
         imageView = (ImageView) convertView;
       } else {
-        Log.d("ImageAdapter:getView", "View was not an ImageView at position: "
+        Log.d(TAG, "getView View was not an ImageView at position: "
             + position);
         return null;
       }
@@ -66,7 +69,7 @@ public class ImageAdapter extends BaseAdapter {
               R.drawable.ic_menu_delete));
         }
       } catch (Exception e) {
-        Log.d("getView", "ignoring caught exception: "
+        Log.d(TAG, "getView ignoring caught exception: "
             + e.getClass().getCanonicalName() + " " + e.getMessage());
       }
     } else {
