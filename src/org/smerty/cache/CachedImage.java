@@ -20,6 +20,8 @@ import android.util.Log;
 
 public class CachedImage implements Serializable {
 
+  private static final String TAG = CachedImage.class.getName();
+
   private static final long serialVersionUID = 1L;
 
   private static final int READ_BUFFER_SIZE = 512;
@@ -202,11 +204,11 @@ public class CachedImage implements Serializable {
 
     if (this.getUrl() != null && this.getUrl().length() > 0) {
       File imgfile = this.getImageFile();
-      Log.d("download", "cache full path: " + imgfile.getAbsolutePath());
+      Log.d(TAG, "downloa cache full path: " + imgfile.getAbsolutePath());
       try {
         URL iconURL = null;
         iconURL = new URL(this.getUrl());
-        Log.d("download", "Fetching: " + iconURL.toString());
+        Log.d(TAG, "download Fetching: " + iconURL.toString());
 
         FileOutputStream imgout = new FileOutputStream(imgfile);
         InputStream ism = iconURL.openStream();
@@ -226,12 +228,12 @@ public class CachedImage implements Serializable {
 
         double totTime = (double) (System.currentTimeMillis() - startTime)
             / (double) MILLIS_PER_SECOND;
-        Log.d("DL perf", totalBytes + " bytes in " + totTime + " seconds ("
+        Log.d(TAG, "DL perf " + totalBytes + " bytes in " + totTime + " seconds ("
             + ((totalBytes * 1.0) / (startTime)) + ")");
 
         return true;
       } catch (IOException e) {
-        Log.e("download", "Could not write file " + e.getMessage());
+        Log.e(TAG, "download Could not write file " + e.getMessage());
         return false;
       }
     }

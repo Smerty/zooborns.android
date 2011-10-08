@@ -30,6 +30,8 @@ import android.widget.Toast;
 
 public class FullscreenImage extends Activity {
 
+  private static final String TAG = FullscreenImage.class.getName();
+
   private static final int SWIPE_MIN_DISTANCE = 120;
   private static final int SWIPE_MAX_OFF_PATH = 250;
   private static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -67,7 +69,7 @@ public class FullscreenImage extends Activity {
           }
         }
       } catch (Exception e) {
-        Log.d("onFling", "ignoring caught exception: "
+        Log.d(TAG, "onFling ignoring caught exception: "
             + e.getClass().getCanonicalName() + " " + e.getMessage());
       }
       return false;
@@ -133,7 +135,7 @@ public class FullscreenImage extends Activity {
       }
       fsimgview.invalidate();
     } else {
-      Log.d("onCreate", "fsimgview was null?");
+      Log.d(TAG, "onCreate fsimgview was null?");
     }
   }
 
