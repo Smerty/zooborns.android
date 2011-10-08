@@ -173,22 +173,22 @@ public class FullscreenImage extends Activity {
   }
 
   public boolean onOptionsItemSelected(MenuItem item) {
-    ZooBornsEntry entry = this.getEntryFromCachedImage(cachedImageList
+    final ZooBornsEntry entry = this.getEntryFromCachedImage(cachedImageList
         .get(position));
     Intent i;
     switch (item.getItemId()) {
     case MENU_SEND:
-      i = new Intent(android.content.Intent.ACTION_SEND);
-      i.setType("image/jpg");
-      if (entry != null && entry.getTitle() != null
-          && entry.getTitle().length() > 0) {
-        i.putExtra(Intent.EXTRA_SUBJECT, "ZooBorns: " + entry.getTitle());
-      } else {
-        i.putExtra(Intent.EXTRA_SUBJECT, "ZooBorns");
-      }
-      i.putExtra(Intent.EXTRA_STREAM,
-          Uri.parse(cachedImageList.get(position).filesystemUri()));
-      startActivity(Intent.createChooser(i, "Share Photo Using..."));
+      final String options[] = {"Photo with full story", "Photo with linked story", "Just a link"};
+      AlertDialog.Builder sendBuilder = new AlertDialog.Builder(this);
+      sendBuilder.
+          setSingleChoiceItems(options, -1, new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, final int item) {
+              dialog.dismiss();
+              share(entry, item);
+            }
+          });
+      AlertDialog sendAlert = sendBuilder.create();
+      sendAlert.show();
       return true;
     case MENU_FULLSTORY:
       if (entry != null && entry.getBody() != null
@@ -226,6 +226,30 @@ public class FullscreenImage extends Activity {
       return true;
     }
     return false;
+  }
+
+  public void share(ZooBornsEntry entry, int option) {
+    Intent i;
+    i = new Intent(android.content.Intent.ACTION_SEND);
+    if (option == 0 || option == 1) {
+      i.setType("image/jpg");
+      i.putExtra(Intent.EXTRA_STREAM,
+          Uri.parse(cachedImageList.get(position).filesystemUri()));
+    } else {
+      i.setType("text/plain");
+    }
+    if (entry != null && entry.getTitle() != null
+        && entry.getTitle().length() > 0) {
+      i.putExtra(Intent.EXTRA_SUBJECT, "ZooBorns: " + entry.getTitle());
+      if (option == 0) {
+        i.putExtra(Intent.EXTRA_TEXT, entry.getBody() + "\n\n" + entry.getUrl());
+      } else if (option == 1 || option == 2) {
+        i.putExtra(Intent.EXTRA_TEXT, entry.getUrl());
+      }
+    } else {
+      i.putExtra(Intent.EXTRA_SUBJECT, "ZooBorns");
+    }
+    startActivity(Intent.createChooser(i, "Share ZooBorn Using..."));
   }
 
 }
