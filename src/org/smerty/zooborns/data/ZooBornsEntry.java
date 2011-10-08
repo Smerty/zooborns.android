@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class ZooBornsEntry implements Serializable {
 
+  private static final String NON_BREAKING_SPACE = String.valueOf((char)160);
+
   private static final long serialVersionUID = 1L;
 
   private String url;
@@ -40,7 +42,7 @@ public class ZooBornsEntry implements Serializable {
   }
 
   public final String getBody() {
-    return body.replaceAll("<(.*?)*>", "").trim();
+    return body.replaceAll("<(\\/?)p>", "\n").replaceAll("<br(.*?)*>", "\n").replaceAll("<(.*?)*>", "").replaceAll(NON_BREAKING_SPACE, " ").trim();
   }
 
   public final String getBodyRaw() {
