@@ -360,7 +360,6 @@ public class ZooBorns extends Activity {
     builder.setView(notificationsCheck);
 
     builder.setTitle("ZooBorns Settings")
-        .setCancelable(true)
         .setPositiveButton("Save", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
             SharedPreferences.Editor editorDialog = settings.edit();
@@ -368,11 +367,17 @@ public class ZooBorns extends Activity {
             editorDialog.commit();
             dialog.dismiss();
           }
-        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        });
+
+    if (settings.contains("notifications")) {
+      builder.setCancelable(true)
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
             dialog.cancel();
           }
         });
+    }
+
     AlertDialog alert = builder.create();
     alert.show();
   }
