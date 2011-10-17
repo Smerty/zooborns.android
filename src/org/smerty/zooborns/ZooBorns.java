@@ -288,6 +288,9 @@ public class ZooBorns extends Activity {
       if (that.imgCache != null) {
         that.imgCache.startDownloading();
       }
+      if (!settings.contains("notifications")) {
+        settings();
+      }
     }
   }
 
@@ -315,6 +318,7 @@ public class ZooBorns extends Activity {
       SharedPreferences.Editor editor = settings.edit();
       // editor.putString("etag", null);
       editor.remove("etag");
+      //editor.remove("notifications");
       //editor.remove("lastNotificationEtag"); // don't notify again even if we purge
       editor.commit();
 
