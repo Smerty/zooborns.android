@@ -305,7 +305,7 @@ public class ZooBorns extends Activity {
 
   public boolean onOptionsItemSelected(MenuItem item) {
 
-
+    Log.d(TAG, "menu item selected (" + item + ")");
 
     switch (item.getItemId()) {
     case MENU_QUIT:
@@ -337,7 +337,6 @@ public class ZooBorns extends Activity {
       this.finish();
       return true;
     case MENU_SETTINGS:
-      Log.d(TAG, "settingsMenu dialog");
       settings();
       return true;
     }
@@ -345,6 +344,8 @@ public class ZooBorns extends Activity {
   }
 
   public void settings() {
+
+    Log.d(TAG, "settings dialog");
 
     boolean notifications = settings.getBoolean("notifications", true);
 
