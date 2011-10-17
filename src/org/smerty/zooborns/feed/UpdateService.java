@@ -56,9 +56,7 @@ public class UpdateService extends IntentService {
     HttpProtocolParams.setUseExpectContinue(params, true);
     HttpProtocolParams.setHttpElementCharset(params, "UTF-8");
 
-    String agent = "ZooBorns ";
-
-    agent += "for android";
+    String agent = "ZooBorns for android";
 
     HttpProtocolParams.setUserAgent(params, agent);
 

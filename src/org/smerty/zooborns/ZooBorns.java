@@ -41,6 +41,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
 import android.widget.GridView;
 
 public class ZooBorns extends Activity {
@@ -287,6 +288,9 @@ public class ZooBorns extends Activity {
       if (that.imgCache != null) {
         that.imgCache.startDownloading();
       }
+      if (!settings.contains("notifications")) {
+        settings();
+      }
     }
   }
 
@@ -304,61 +308,81 @@ public class ZooBorns extends Activity {
 
   public boolean onOptionsItemSelected(MenuItem item) {
 
-
+    Log.d(TAG, "menu item selected (" + item + ")");
 
     switch (item.getItemId()) {
     case MENU_QUIT:
       this.finish();
       return true;
     case MENU_CLEAR:
-      SharedPreferences.Editor editor = settings.edit();
-      // editor.putString("etag", null);
-      editor.remove("etag");
-      //editor.remove("lastNotificationEtag"); // don't notify again even if we purge
-      editor.commit();
-
-      // this should be replaced with the purge method in ImageCache
-      File rootDir = Environment.getExternalStorageDirectory();
-      rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
-
-      for (File file : rootDir.listFiles()) {
-        if (file != null) {
-          Log.d(TAG, "CLEAR IT Deleting old image: " + file.getAbsolutePath());
-          if (!file.delete()) {
-            Log.d(TAG, "purge Can't delete: " + file.getAbsolutePath());
-          } else {
-            Log.d(TAG, " purgeDeleted: " + file.getAbsolutePath());
-          }
-        } else {
-          Log.d(TAG, "purge file (" + file + ") was null?");
-        }
-      }
-      this.finish();
+      purge();
       return true;
     case MENU_SETTINGS:
-      Log.d(TAG, "settingsMenu dialog");
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      builder.setMessage("Enable notifications for new ZooBorns photos?")
-          .setCancelable(false)
-          .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-              SharedPreferences.Editor editorDialog = settings.edit();
-              editorDialog.putBoolean("notifications", true);
-              editorDialog.commit();
-              dialog.dismiss();
-            }
-          }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-              SharedPreferences.Editor editorDialog = settings.edit();
-              editorDialog.putBoolean("notifications", false);
-              editorDialog.commit();
-              dialog.cancel();
-            }
-          });
-      AlertDialog alert = builder.create();
-      alert.show();
+      settings();
       return true;
     }
     return false;
+  }
+
+  public void purge() {
+    SharedPreferences.Editor editor = settings.edit();
+    // editor.putString("etag", null);
+    editor.remove("etag");
+    //editor.remove("notifications");
+    //editor.remove("lastNotificationEtag"); // don't notify again even if we purge
+    editor.commit();
+
+    // this should be replaced with the purge method in ImageCache
+    File rootDir = Environment.getExternalStorageDirectory();
+    rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
+
+    for (File file : rootDir.listFiles()) {
+      if (file != null) {
+        Log.d(TAG, "CLEAR IT Deleting old image: " + file.getAbsolutePath());
+        if (!file.delete()) {
+          Log.d(TAG, "purge Can't delete: " + file.getAbsolutePath());
+        } else {
+          Log.d(TAG, " purgeDeleted: " + file.getAbsolutePath());
+        }
+      } else {
+        Log.d(TAG, "purge file (" + file + ") was null?");
+      }
+    }
+    this.finish();
+  }
+
+  public void settings() {
+
+    Log.d(TAG, "settings dialog");
+
+    boolean notifications = settings.getBoolean("notifications", true);
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    final CheckBox notificationsCheck = new CheckBox(this);
+    notificationsCheck.setChecked(notifications);
+    notificationsCheck.setText("Enable notifications for new ZooBorns photos?");
+    builder.setView(notificationsCheck);
+
+    builder.setTitle("ZooBorns Settings")
+        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            SharedPreferences.Editor editorDialog = settings.edit();
+            editorDialog.putBoolean("notifications", notificationsCheck.isChecked());
+            editorDialog.commit();
+            dialog.dismiss();
+          }
+        });
+
+    if (settings.contains("notifications")) {
+      builder.setCancelable(true)
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel();
+          }
+        });
+    }
+
+    AlertDialog alert = builder.create();
+    alert.show();
   }
 }
