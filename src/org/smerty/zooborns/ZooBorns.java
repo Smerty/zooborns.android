@@ -315,36 +315,40 @@ public class ZooBorns extends Activity {
       this.finish();
       return true;
     case MENU_CLEAR:
-      SharedPreferences.Editor editor = settings.edit();
-      // editor.putString("etag", null);
-      editor.remove("etag");
-      //editor.remove("notifications");
-      //editor.remove("lastNotificationEtag"); // don't notify again even if we purge
-      editor.commit();
-
-      // this should be replaced with the purge method in ImageCache
-      File rootDir = Environment.getExternalStorageDirectory();
-      rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
-
-      for (File file : rootDir.listFiles()) {
-        if (file != null) {
-          Log.d(TAG, "CLEAR IT Deleting old image: " + file.getAbsolutePath());
-          if (!file.delete()) {
-            Log.d(TAG, "purge Can't delete: " + file.getAbsolutePath());
-          } else {
-            Log.d(TAG, " purgeDeleted: " + file.getAbsolutePath());
-          }
-        } else {
-          Log.d(TAG, "purge file (" + file + ") was null?");
-        }
-      }
-      this.finish();
+      purge();
       return true;
     case MENU_SETTINGS:
       settings();
       return true;
     }
     return false;
+  }
+
+  public void purge() {
+    SharedPreferences.Editor editor = settings.edit();
+    // editor.putString("etag", null);
+    editor.remove("etag");
+    //editor.remove("notifications");
+    //editor.remove("lastNotificationEtag"); // don't notify again even if we purge
+    editor.commit();
+
+    // this should be replaced with the purge method in ImageCache
+    File rootDir = Environment.getExternalStorageDirectory();
+    rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
+
+    for (File file : rootDir.listFiles()) {
+      if (file != null) {
+        Log.d(TAG, "CLEAR IT Deleting old image: " + file.getAbsolutePath());
+        if (!file.delete()) {
+          Log.d(TAG, "purge Can't delete: " + file.getAbsolutePath());
+        } else {
+          Log.d(TAG, " purgeDeleted: " + file.getAbsolutePath());
+        }
+      } else {
+        Log.d(TAG, "purge file (" + file + ") was null?");
+      }
+    }
+    this.finish();
   }
 
   public void settings() {
