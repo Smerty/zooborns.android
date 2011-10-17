@@ -41,6 +41,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
 import android.widget.GridView;
 
 public class ZooBorns extends Activity {
@@ -337,28 +338,37 @@ public class ZooBorns extends Activity {
       return true;
     case MENU_SETTINGS:
       Log.d(TAG, "settingsMenu dialog");
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      builder.setMessage("Enable notifications for new ZooBorns photos?")
-          .setCancelable(false)
-          .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-              SharedPreferences.Editor editorDialog = settings.edit();
-              editorDialog.putBoolean("notifications", true);
-              editorDialog.commit();
-              dialog.dismiss();
-            }
-          }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-              SharedPreferences.Editor editorDialog = settings.edit();
-              editorDialog.putBoolean("notifications", false);
-              editorDialog.commit();
-              dialog.cancel();
-            }
-          });
-      AlertDialog alert = builder.create();
-      alert.show();
+      settings();
       return true;
     }
     return false;
+  }
+
+  public void settings() {
+
+    boolean notifications = settings.getBoolean("notifications", true);
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    final CheckBox notificationsCheck = new CheckBox(this);
+    notificationsCheck.setChecked(notifications);
+    notificationsCheck.setText("Enable notifications for new ZooBorns photos?");
+    builder.setView(notificationsCheck);
+
+    builder.setTitle("ZooBorns Settings")
+        .setCancelable(true)
+        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            SharedPreferences.Editor editorDialog = settings.edit();
+            editorDialog.putBoolean("notifications", notificationsCheck.isChecked());
+            editorDialog.commit();
+            dialog.dismiss();
+          }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel();
+          }
+        });
+    AlertDialog alert = builder.create();
+    alert.show();
   }
 }
