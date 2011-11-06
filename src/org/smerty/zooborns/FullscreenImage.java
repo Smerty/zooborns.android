@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -57,16 +58,10 @@ public class FullscreenImage extends Activity {
         }
         if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
             && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-          if (position < cachedImageList.size() - 1) {
-            position++;
-            setImage();
-          }
+          nextImage();
         } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
             && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-          if (position > 0) {
-            position--;
-            setImage();
-          }
+          prevImage();
         }
       } catch (Exception e) {
         Log.d(TAG, "onFling ignoring caught exception: "
@@ -80,6 +75,18 @@ public class FullscreenImage extends Activity {
   public boolean onTouchEvent(MotionEvent event) {
     gestureDetector.onTouchEvent(event);
     return true;
+  }
+
+  @Override
+  public boolean onKeyUp(int keyCode, KeyEvent event) {
+
+    if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+      prevImage();
+    } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+      nextImage();
+    }
+
+    return super.onKeyUp(keyCode, event);
   }
 
   private ZooBornsEntry getEntryFromCachedImage(CachedImage cachedImage) {
@@ -253,6 +260,20 @@ public class FullscreenImage extends Activity {
       i.putExtra(Intent.EXTRA_SUBJECT, "ZooBorns");
     }
     startActivity(Intent.createChooser(i, "Share ZooBorn Using..."));
+  }
+
+  public void nextImage() {
+    if (position < cachedImageList.size() - 1) {
+      position++;
+      setImage();
+    }
+  }
+
+  public void prevImage() {
+    if (position > 0) {
+      position--;
+      setImage();
+    }
   }
 
 }
