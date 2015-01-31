@@ -198,12 +198,13 @@ public class ZooBorns extends Activity {
 
       try {
         SharedPreferences settings = getSharedPreferences("ZooBornsPrefs", 0);
-        String etag = settings.getString("etag", null);
+        //String etag = settings.getString("etag", null);
+        String etag = "http://feeds.feedburner.com/ZooBorns?format=xml";
 
         that.zGallery.update(etag);
 
         File rootDir = Environment.getExternalStorageDirectory();
-        rootDir = new File(rootDir.getAbsolutePath() + "/.zooborns");
+        rootDir = new File(rootDir.getAbsolutePath() + "/zooborns");
 
         if (!rootDir.isDirectory()) {
           if (rootDir.mkdir()) {
@@ -220,7 +221,7 @@ public class ZooBorns extends Activity {
 
         File cache = new File(rootDir, "cache.file");
 
-        if (that.zGallery.getEtag() != null) {
+        if (that.zGallery.getEtag() != null || !cache.exists()) {
           SharedPreferences.Editor editor = settings.edit();
           editor.putString("etag", that.zGallery.getEtag());
           editor.commit();
