@@ -10,7 +10,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.smerty.cache.CachedImage;
 import org.smerty.cache.ImageCache;
@@ -188,6 +190,23 @@ public class ZooBorns extends Activity {
 
     private ZooBorns that;
 
+      private void createCache(File cache) {
+          SharedPreferences.Editor editor = settings.edit();
+          editor.putString("etag", that.zGallery.getEtag());
+          editor.commit();
+
+          ObjectOutput output;
+
+          try {
+              OutputStream file = new FileOutputStream(cache);
+              output = new ObjectOutputStream(file);
+              output.writeObject(that.zGallery);
+              output.close();
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+      }
+
     protected Integer doInBackground(ZooBorns... thats) {
 
       if (that == null) {
@@ -222,19 +241,14 @@ public class ZooBorns extends Activity {
         File cache = new File(rootDir, "cache.file");
 
         if (that.zGallery.getEtag() != null || !cache.exists()) {
-          SharedPreferences.Editor editor = settings.edit();
-          editor.putString("etag", that.zGallery.getEtag());
-          editor.commit();
-
-          OutputStream file = new FileOutputStream(cache);
-          ObjectOutput output = new ObjectOutputStream(file);
-          try {
-            output.writeObject(that.zGallery);
-          } finally {
-            output.close();
-          }
+            createCache(cache);
         } else {
-
+            Date lastmodified = new Date(cache.lastModified());
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+          Log.d("File Info", formatter.format(lastmodified));
+            if((new Date()).getTime() - lastmodified.getTime() > 86400){
+                createCache(cache);
+            }
           InputStream file = new FileInputStream(cache);
           ObjectInput input = new ObjectInputStream(file);
           try {
