@@ -1,9 +1,9 @@
-package org.smerty.cache;
+package org.angrybeanie.cache;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import org.smerty.zooborns.ZooBorns;
+import org.angrybeanie.zooborns.ZooBorns;
 
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;

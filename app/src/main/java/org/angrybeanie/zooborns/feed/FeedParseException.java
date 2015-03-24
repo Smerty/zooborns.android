@@ -1,4 +1,4 @@
-package org.smerty.zooborns.feed;
+package org.angrybeanie.zooborns.feed;
 
 @SuppressWarnings("serial")
 public class FeedParseException extends Exception {

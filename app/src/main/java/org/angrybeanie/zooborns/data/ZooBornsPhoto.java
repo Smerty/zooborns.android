@@ -1,4 +1,4 @@
-package org.smerty.zooborns.data;
+package org.angrybeanie.zooborns.data;
 
 import java.io.Serializable;
 

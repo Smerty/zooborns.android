@@ -1,4 +1,4 @@
-package org.smerty.zooborns.feed;
+package org.angrybeanie.zooborns.feed;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,8 +13,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.smerty.zooborns.R;
-import org.smerty.zooborns.ZooBorns;
+import org.angrybeanie.zooborns.R;
+import org.angrybeanie.zooborns.ZooBorns;
 
 import android.app.IntentService;
 import android.app.Notification;

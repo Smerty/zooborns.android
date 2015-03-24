@@ -1,4 +1,4 @@
-package org.smerty.zooborns;
+package org.angrybeanie.zooborns;
 
 import android.R;
 import android.util.Log;

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "org.smerty.zooborns"
+        applicationId "org.angrybeanie.zooborns"
         minSdkVersion 7
         targetSdkVersion 13
     }

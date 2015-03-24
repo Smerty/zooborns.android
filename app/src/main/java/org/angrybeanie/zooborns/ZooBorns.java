@@ -1,4 +1,4 @@
-package org.smerty.zooborns;
+package org.angrybeanie.zooborns;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,13 +13,14 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
-import org.smerty.cache.CachedImage;
-import org.smerty.cache.ImageCache;
-import org.smerty.zooborns.data.ZooBornsEntry;
-import org.smerty.zooborns.data.ZooBornsGallery;
-import org.smerty.zooborns.data.ZooBornsPhoto;
-import org.smerty.zooborns.feed.FeedParseException;
+import org.angrybeanie.cache.CachedImage;
+import org.angrybeanie.cache.ImageCache;
+import org.angrybeanie.zooborns.data.ZooBornsEntry;
+import org.angrybeanie.zooborns.data.ZooBornsGallery;
+import org.angrybeanie.zooborns.data.ZooBornsPhoto;
+import org.angrybeanie.zooborns.feed.FeedParseException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -245,8 +246,10 @@ public class ZooBorns extends Activity {
         } else {
             Date lastmodified = new Date(cache.lastModified());
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-          Log.d("File Info", formatter.format(lastmodified));
-            if((new Date()).getTime() - lastmodified.getTime() > 86400){
+            Log.d("Cache refresh", formatter.format(lastmodified));
+            long timediff = new Date().getTime() - lastmodified.getTime();
+            if(timediff > 86400000){
+                Log.d("Cache refresh", "Refreshing cache"+ Objects.toString(timediff));
                 createCache(cache);
             }
           InputStream file = new FileInputStream(cache);

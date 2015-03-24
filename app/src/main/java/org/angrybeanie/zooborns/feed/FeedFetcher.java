@@ -1,4 +1,4 @@
-package org.smerty.zooborns.feed;
+package org.angrybeanie.zooborns.feed;
 
 import java.io.InputStream;
 import java.util.HashMap;

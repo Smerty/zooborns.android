@@ -1,4 +1,4 @@
-package org.smerty.zooborns.feed;
+package org.angrybeanie.zooborns.feed;
 
 public enum UpdateStatus {
   ERROR, NOT_MODIFIED, COMPLETE

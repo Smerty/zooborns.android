@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="org.smerty.zooborns" android:versionCode="14"
+  package="org.angrybeanie.zooborns" android:versionCode="14"
   android:versionName="1.4.4">
   <application android:icon="@drawable/icon" android:label="@string/app_name">
-    <activity android:name=".ZooBorns" android:label="@string/app_name"
+    <activity android:name="org.angrybeanie.zooborns.ZooBorns" android:label="@string/app_name"
       android:configChanges="keyboardHidden|orientation">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -11,7 +11,7 @@
       </intent-filter>
     </activity>
 
-    <activity android:name=".FullscreenImage"
+    <activity android:name="org.angrybeanie.zooborns.FullscreenImage"
       android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
       android:configChanges="keyboardHidden|orientation">
       <intent-filter>
@@ -20,19 +20,16 @@
       </intent-filter>
     </activity>
 
-    <receiver android:name="org.smerty.zooborns.BootReceiver">
+    <receiver android:name="org.angrybeanie.zooborns.BootReceiver">
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED" />
       </intent-filter>
     </receiver>
     
-    <service android:name="org.smerty.zooborns.feed.UpdateService" />
+    <service android:name="org.angrybeanie.zooborns.feed.UpdateService" />
     
     <uses-library android:name="android.test.runner" />
   </application>
-
-  <instrumentation android:name="android.test.InstrumentationTestRunner"
-    android:targetPackage="org.smerty.zooborns" android:label="tests" />
 
 <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="13"></uses-sdk>
 

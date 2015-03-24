@@ -1,6 +1,6 @@
-package org.smerty.zooborns;
+package org.angrybeanie.zooborns;
 
-import org.smerty.zooborns.feed.UpdateService;
+import org.angrybeanie.zooborns.feed.UpdateService;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

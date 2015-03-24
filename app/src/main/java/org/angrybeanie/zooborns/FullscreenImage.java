@@ -1,14 +1,14 @@
-package org.smerty.zooborns;
+package org.angrybeanie.zooborns;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.smerty.cache.CachedImage;
-import org.smerty.zooborns.data.ZooBornsEntry;
-import org.smerty.zooborns.data.ZooBornsGallery;
-import org.smerty.zooborns.data.ZooBornsPhoto;
+import org.angrybeanie.cache.CachedImage;
+import org.angrybeanie.zooborns.data.ZooBornsEntry;
+import org.angrybeanie.zooborns.data.ZooBornsGallery;
+import org.angrybeanie.zooborns.data.ZooBornsPhoto;
 
 import android.R;
 import android.app.Activity;

@@ -1,12 +1,12 @@
-package org.smerty.zooborns.data;
+package org.angrybeanie.zooborns.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.smerty.zooborns.feed.FeedFetcher;
-import org.smerty.zooborns.feed.UpdateStatus;
+import org.angrybeanie.zooborns.feed.FeedFetcher;
+import org.angrybeanie.zooborns.feed.UpdateStatus;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

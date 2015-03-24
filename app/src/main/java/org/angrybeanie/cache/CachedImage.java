@@ -1,4 +1,4 @@
-package org.smerty.cache;
+package org.angrybeanie.cache;
 
 import java.io.File;
 import java.io.FileInputStream;
