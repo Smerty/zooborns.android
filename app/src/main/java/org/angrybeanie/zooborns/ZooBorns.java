@@ -241,26 +241,8 @@ public class ZooBorns extends Activity {
 
         File cache = new File(rootDir, "cache.file");
 
-        if (that.zGallery.getEtag() != null || !cache.exists()) {
+        if (that.zGallery.getEtag() != null || !ImageCache.checkCacheValidity(cache)) {
             createCache(cache);
-        } else {
-            Date lastmodified = new Date(cache.lastModified());
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-            Log.d("Cache refresh", formatter.format(lastmodified));
-            long timediff = new Date().getTime() - lastmodified.getTime();
-            if(timediff > 86400000){
-                Log.d("Cache refresh", "Refreshing cache"+ Objects.toString(timediff));
-                createCache(cache);
-            }
-          InputStream file = new FileInputStream(cache);
-          ObjectInput input = new ObjectInputStream(file);
-          try {
-            // deserialize the List
-            that.zGallery = (ZooBornsGallery) input.readObject();
-          } finally {
-            input.close();
-          }
-
         }
 
       } catch (IOException e) {

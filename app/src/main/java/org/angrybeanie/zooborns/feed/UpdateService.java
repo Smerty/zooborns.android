@@ -1,9 +1,11 @@
 package org.angrybeanie.zooborns.feed;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.angrybeanie.cache.ImageCache;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -23,6 +25,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.util.Log;
 
 public class UpdateService extends IntentService {
@@ -44,10 +47,19 @@ public class UpdateService extends IntentService {
     Log.d(TAG, "onHandleIntent");
 
     SharedPreferences settings = getSharedPreferences("ZooBornsPrefs", 0);
+    File rootDir = Environment.getExternalStorageDirectory();
+    rootDir = new File(rootDir.getAbsolutePath() + "/zooborns");
+
+    File cache = new File(rootDir, "cache.file");
 
     if (!settings.getBoolean("notifications", true)) {
       Log.d(TAG, "Notifications disabled, skipping update check.");
       return;
+    }
+
+    if(ImageCache.checkCacheValidity(cache)) {
+       Log.d(TAG, "Cache file is valid");
+       return;
     }
 
     HttpParams params = new BasicHttpParams();

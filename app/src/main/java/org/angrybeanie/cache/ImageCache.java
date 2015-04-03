@@ -1,7 +1,10 @@
 package org.angrybeanie.cache;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Objects;
 
 import org.angrybeanie.zooborns.ZooBorns;
 
@@ -188,4 +191,18 @@ public class ImageCache {
       Log.d(TAG, "ImageCache:onPostExecute" + that.getApplicationInfo().packageName);
     }
   }
+
+    public static boolean checkCacheValidity(File cache) {
+        if(cache.exists()) {
+            Date lastmodified = new Date(cache.lastModified());
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+            Log.d("Cache refresh", formatter.format(lastmodified));
+            long timediff = new Date().getTime() - lastmodified.getTime();
+            Log.d(TAG, "Timediff: "+ String.valueOf(timediff));
+            if (timediff < 86400000) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
