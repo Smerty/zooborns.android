@@ -19,6 +19,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -29,7 +30,7 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class FullscreenImage extends Activity {
+public class FullscreenImage extends ActionBarActivity {
 
   private static final String TAG = FullscreenImage.class.getName();
 

@@ -36,6 +36,7 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -47,7 +48,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.GridView;
 
-public class ZooBorns extends Activity {
+public class ZooBorns extends ActionBarActivity {
 
   private static final String TAG = ZooBorns.class.getName();
 
