@@ -177,7 +177,7 @@ public class FullscreenImage extends ActionBarActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     menu.add(0, MENU_SEND, 0, "Share Photo...");
     menu.add(0, MENU_FULLSTORY, 0, "Full Story");
-    menu.add(0, MENU_LAUNCHZBDC, 0, "Open in Broswer");
+    menu.add(0, MENU_LAUNCHZBDC, 0, "Open in Browser");
     menu.add(0, MENU_WALLPAPER, 0, "Set as Wallpaper");
     return true;
   }
